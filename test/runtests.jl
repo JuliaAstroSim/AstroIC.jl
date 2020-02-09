@@ -1,4 +1,4 @@
-using Tests
+using Test
 
 using Unitful, UnitfulAstro
 using AstroIO, PhysicalParticles

@@ -1,11 +1,12 @@
 module AstroIC
 
-_precompile_(true)
+__precompile__(true)
 
 using Unitful, UnitfulAstro
 using Distributions
 
 using PhysicalParticles
+using AstroIO
 
 
 
