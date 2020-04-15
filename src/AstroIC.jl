@@ -15,6 +15,10 @@ import Unitful: Units
 export
     show,
 
+    GravModel,
+        MOND,
+        Newton,
+
     PlummerStarCluster,
 
     generate

@@ -13,14 +13,26 @@ struct PlummerStarCluster{T<:AbstractParticleCollection} <: InitialConditionConf
     model::GravModel
 end
 
-function PlummerStarCluster(;
-        collection = STAR(),
-        NumSamples = 1000,
-        VirialRadius = 0.010u"kpc",
-        TotalMass = 1.0e5u"Msun",
-        G = 4.498502151469553e-6u"kpc^3 / Msun / Gyr^2",
+"""
+PlummerStarCluster
 
-        model = Newton(),
+## fields
+
+- `collection` particle type
+- `NumSamples` amount of particles
+- `VirialRadius`
+- `TotalMass` mass are seperated equally to all particles
+- `G` Newtonian constant of gravitation
+- `model` gravity model [ Newton | MOND ]
+"""
+function PlummerStarCluster(;
+        collection::AbstractStarCollection = STAR(),
+        NumSamples::Int64 = 1000,
+        VirialRadius::Number = 0.010u"kpc",
+        TotalMass::Number = 1.0e5u"Msun",
+        G::Number = 4.498502151469553e-6u"kpc^3 / Msun / Gyr^2",
+
+        model::GravModel = Newton(),
     )
     
     return PlummerStarCluster(
@@ -122,3 +134,14 @@ function generate(config::PlummerStarCluster, units = uAstro;
 
     return particles
 end
+
+function softlength(V::Number, N::Int64)
+    return cbrt(V / N)
+end
+
+"""
+function softlength
+
+    return recommended softening length
+"""
+softlength
