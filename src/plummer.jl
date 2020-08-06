@@ -128,9 +128,7 @@ function generate(config::PlummerStarCluster, units = uAstro;
     assign_particles(particles, :Vel, vel)
     
     Mmean = config.TotalMass / NumSamples
-    for p in particles
-        p.Mass = Mmean
-    end
+    assign_particles(particles, :Mass, Mmean)
 
     return Dict(:stars => particles)
 end
