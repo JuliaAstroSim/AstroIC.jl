@@ -23,7 +23,7 @@ export
 
     generate
 
-abstract type InitialConditionConfig{T} end
+abstract type InitialConditionConfig end
 
 include("Traits.jl")
 include("plummer.jl")

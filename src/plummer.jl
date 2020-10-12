@@ -1,8 +1,8 @@
 getuVel(::Nothing) = nothing
 getuVel(units::Array) = units[1] / units[2]
 
-struct PlummerStarCluster{T<:AbstractParticleCollection} <: InitialConditionConfig{T}
-    collection::T
+struct PlummerStarCluster <: InitialConditionConfig
+    collection::Collection
     NumSamples::Integer
 
     VirialRadius::Number
@@ -26,7 +26,7 @@ PlummerStarCluster
 - `model` gravity model [ Newton | MOND ]
 """
 function PlummerStarCluster(;
-        collection::AbstractStarCollection = STAR(),
+        collection::Collection = STAR,
         NumSamples::Int64 = 1000,
         VirialRadius::Number = 0.010u"kpc",
         TotalMass::Number = 1.0e5u"Msun",
