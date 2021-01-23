@@ -130,7 +130,7 @@ function generate(config::PlummerStarCluster, units = uAstro;
     Mmean = config.TotalMass / NumSamples
     assign_particles(particles, :Mass, Mmean)
 
-    return Dict(:stars => particles)
+    return Dict("stars" => particles)
 end
 
 function softlength(V::Number, N::Int64)

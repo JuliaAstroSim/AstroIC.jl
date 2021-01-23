@@ -19,7 +19,7 @@ using AstroIC
 
 ## First define a config. Keywords are necessary since the config type is immutable
 config = PlummerStarCluster(
-    collection = STAR(),
+    collection = STAR,
     NumSamples = 100,
     VirialRadius = 0.010u"kpc",
     TotalMass = 1.0e5u"Msun",
