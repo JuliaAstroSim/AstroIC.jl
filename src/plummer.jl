@@ -1,16 +1,12 @@
-getuVel(::Nothing) = nothing
-getuVel(units::Array) = units[1] / units[2]
-
-struct PlummerStarCluster <: InitialConditionConfig
+mutable struct PlummerStarCluster{I, Len, MASS, GM} <: InitialConditionConfig
     collection::Collection
-    NumSamples::Integer
+    NumSamples::I
 
-    VirialRadius::Number
+    VirialRadius::Len
 
-    TotalMass::Number
-    G::Number
+    TotalMass::MASS
 
-    model::GravModel
+    model::GM
 end
 
 """
@@ -30,7 +26,6 @@ function PlummerStarCluster(;
         NumSamples::Int64 = 1000,
         VirialRadius::Number = 0.010u"kpc",
         TotalMass::Number = 1.0e5u"Msun",
-        G::Number = 4.498502151469553e-6u"kpc^3 / Msun / Gyr^2",
 
         model::GravModel = Newton(),
     )
@@ -40,7 +35,6 @@ function PlummerStarCluster(;
         NumSamples,
         VirialRadius,
         TotalMass,
-        G,
         model
     )
 end
@@ -50,11 +44,10 @@ function Base.show(io::IO, config::PlummerStarCluster)
         io,
         "Config of Plummer Star Cluster Initial Conditions:",
         "\n          Gravity Model: ", typeof(config.model),
-        "\n    Particle collection: ", config.collection,
+        "\n    Particle Collection: ", config.collection,
         "\n      Number of Samples: ", config.NumSamples,
-        "\n          Virial radius: ", config.VirialRadius,
+        "\n          Virial Radius: ", config.VirialRadius,
         "\n             Total Mass: ", config.TotalMass,
-        "\n       Gravity constant: ", config.G,
     )
 end
 
@@ -91,6 +84,7 @@ function rand_plummervel(r::Array{T,N}, VirialRadius::Number, Mass::Number, G::N
 end
 
 function generate(config::PlummerStarCluster, units = uAstro;
+                  constants::Constant = Constant(units),
                   MaxRadius = 5 * config.VirialRadius,
                   )
     println(config)
@@ -114,7 +108,7 @@ function generate(config::PlummerStarCluster, units = uAstro;
 
     # Sampling
     pos = rand_plummerpos(r, VirialRadius)
-    vel = rand_plummervel(r, VirialRadius, config.TotalMass, config.G, config.model)
+    vel = rand_plummervel(r, VirialRadius, config.TotalMass, constants.G, config.model)
 
     # Cancel out shifting
     v0 = mean(vel)
@@ -132,14 +126,3 @@ function generate(config::PlummerStarCluster, units = uAstro;
 
     return Dict("stars" => particles)
 end
-
-function softlength(V::Number, N::Int64)
-    return cbrt(V / N)
-end
-
-"""
-function softlength
-
-    return recommended softening length
-"""
-softlength
