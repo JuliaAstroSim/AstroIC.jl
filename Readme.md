@@ -14,6 +14,8 @@ or
 
 ## Usage
 
+### Generating a star cluster using Plummer model
+
 ```julia
 using AstroIC
 
@@ -28,6 +30,34 @@ config = PlummerStarCluster(
 
 ## Now generate particles. MaxRadius restricts the sampling region.
 particles = generate(config, MaxRadius = 0.1u"kpc")
+
+# Default units is uAstro, to use SI units:
+using PhysicalParticles
+particles = generate(config, uSI)
+```
+
+### Generating a gas cloud
+
+```julia
+config = GasCloud(
+    collection = GAS,
+    Radius = 20u"kpc",
+    rho0 = 1250u"Msun/kpc^3",
+    T = 300u"K",
+    ParticleMass = Constant().m_p,
+    Nx = 11,
+    Ny = 11,
+    Nz = 11,
+)
+
+particles = generate(config)
+```
+
+### Generating our solar system
+
+```julia
+using Dates
+particles = solarsystem(now())  # SI units
 ```
 
 ## Package ecosystem
