@@ -106,7 +106,7 @@ function generate(config::GasCloud, units = uAstro;
     data = Dict("gases" => empty([SPHGas(units)]))
     id = 1
     for i in 1:length(x)
-        @inbounds r2 = pos[i] * pos[1]
+        @inbounds r2 = pos[i] * pos[i]
         if iszero(r2)
             @inbounds r2 = pos[i+1] * pos[i+1]
         end

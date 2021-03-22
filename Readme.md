@@ -18,6 +18,7 @@ or
 
 ```julia
 using AstroIC
+using PhysicalParticles, UnitfulAstro
 
 ## First define a config. Keywords are necessary since the config type is immutable
 config = PlummerStarCluster(
@@ -32,13 +33,15 @@ config = PlummerStarCluster(
 particles = generate(config, MaxRadius = 0.1u"kpc")
 
 # Default units is uAstro, to use SI units:
-using PhysicalParticles
 particles = generate(config, uSI)
 ```
 
 ### Generating a gas cloud
 
 ```julia
+using AstroIC
+using PhysicalParticles, UnitfulAstro
+
 config = GasCloud(
     collection = GAS,
     Radius = 20u"kpc",
@@ -57,6 +60,7 @@ particles = generate(config)
 
 ```julia
 using Dates
+using AstroIC
 particles = solarsystem(now())  # SI units
 ```
 
