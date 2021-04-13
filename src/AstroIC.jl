@@ -14,12 +14,15 @@ using AstroIO
 import Base: show
 import Unitful: Units
 import PhysicalConstants: CODATA2018
+import PhysicalParticles: rotate
 
 using AstroLib
 import AstroLib: planets
 
 export
-    show,
+    # Tools
+    setpos,
+    setvel,
 
     # Physics
     vmean,
@@ -33,15 +36,39 @@ export
 
     solarsystem,
 
+    helio2xyz,
+    gridpoints,
+
     generate
 
 abstract type InitialConditionConfig end
 
+_common_keywords = """
+## Common keywords
+- `constants`
+"""
+
 include("Traits.jl")
+include("Tools.jl")
 include("physics.jl")
 
 include("plummer.jl")
 include("gascloud.jl")
 include("solarsystem.jl")
+
+
+"""
+    function generate(::InitialConditionConfig, units; kw...)
+
+Generate initial conditions in `units`
+
+# Usable IC configs
+- `PlummerStarCluster`
+- `GasCloud`
+- `ExponentialDisk`
+
+$_common_keywords
+"""
+generate
 
 end # module

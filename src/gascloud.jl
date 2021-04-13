@@ -53,6 +53,13 @@ function Base.show(io::IO, config::GasCloud)
     )
 end
 
+"""
+    function gridpoints(R::Number, Nx::Int, Ny::Int, Nz::Int)
+
+Return a `Tuple` (x, y, z) of Cartesian grid points.
+- `R`: half of the sidelength of box.
+- `Nx`, `Ny`, `Nz`: number of cells in each direction
+"""
 function gridpoints(R::Number, Nx::Int, Ny::Int, Nz::Int)
     x = zeros(Nx, Ny, Nz) * R
     y = zeros(Nx, Ny, Nz) * R
@@ -84,10 +91,17 @@ function gridpoints(R::Number, Nx::Int, Ny::Int, Nz::Int)
     return x, y, z
 end
 
+"""
+    function generate(config::GasCloud, units = uAstro; kw...)
+
+Generate gas cloud sampled from a Cartesian grid
+
+# Keywords
+
+$_common_keywords
+"""
 function generate(config::GasCloud, units = uAstro;
                   constants::Constant = Constant(units))
-    println(config)
-
     R = config.Radius
     Nx = config.Nx
     Ny = config.Ny

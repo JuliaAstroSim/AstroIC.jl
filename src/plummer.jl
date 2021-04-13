@@ -10,7 +10,7 @@ mutable struct PlummerStarCluster{I, Len, MASS, GM} <: InitialConditionConfig
 end
 
 """
-PlummerStarCluster
+    struct PlummerStarCluster
 
 ## fields
 
@@ -83,12 +83,21 @@ function rand_plummervel(r::Array{T,N}, VirialRadius::Number, Mass::Number, G::N
     return [rand_plummervel(i, VirialRadius, Mass, G, model) for i in r]
 end
 
+"""
+    function generate(config::PlummerStarCluster, units = uAstro; kw...)
+
+Generate initial conditions of Plummer model
+
+# Keywords
+
+- `MaxRadius`: resample particles outside the interested radius. Default is 5 * `VirialRadius`
+
+$_common_keywords
+"""
 function generate(config::PlummerStarCluster, units = uAstro;
                   constants::Constant = Constant(units),
                   MaxRadius = 5 * config.VirialRadius,
                   )
-    println(config)
-
     uLength = getuLength(units)
 
     NumSamples = config.NumSamples

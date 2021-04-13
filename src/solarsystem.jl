@@ -1,19 +1,11 @@
 # Planets in Solar System
+"""
+    function helio2xyz(jd, num)
 
-#=
-using AstroLib
-import AstroLib: planets, record
-using Dates
+Convert heliocentric coordinates (in unit `AU`) to Cartesian coordinates in unit `m`
 
-date = jdcnv(now())
-using Unitful, UnitfulAstro
-using PhysicalParticles
-using BangBang
-
-function helio2xyz end
-planets["earth"]
-=#
-
+Returns a `PhysicalParticles::PVector`
+"""
 function helio2xyz(jd, num)
     r, theta, phi = helio(jd, num, true)
     return PVector(
@@ -23,6 +15,12 @@ function helio2xyz(jd, num)
     )
 end
 
+"""
+    function solarsystem(date::DateTime)
+    function solarsystem(date::Real)
+
+Generate initial conditions of Solar System at desinated date
+"""
 function solarsystem(date::Real)
     # Planets
     #coords = [planet_coords(date, i) for i in 1:8]
@@ -36,7 +34,7 @@ function solarsystem(date::Real)
     eccentricities = [planets[names[i]].ecc * u"s" for i in 1:8]
 
     coords1 = [helio2xyz(date + 1.0 / 86400.0, i) for i in 1:8] # Positions at next second
-    vels = (coords1 - coords) / 1.0u"s"
+    vels = (coords1 - coords) / 1.0u"s"                         # Velocity is simply dx/dt
 
     particles = [Star(uSI) for i in 1:8]
     for i in 1:8
