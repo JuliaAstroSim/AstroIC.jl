@@ -30,10 +30,10 @@ function setpos(data::Array, pos::AbstractPoint)
     addpos(data, pos - p0)
 end
 
-function setpos(data::Array, pos::AbstractPoint)
+function setpos(data::Dict, pos::AbstractPoint)
     p0 = median(data, :Pos)
     for k in keys(data)
-        addpos(data, pos - p0)
+        addpos(data[k], pos - p0)
     end
 end
 
@@ -50,7 +50,20 @@ end
 function setvel(data::Dict, vel::AbstractPoint)
     v0 = averagebymass(data, :Vel)
     for k in keys(data)
-        addvel(data, vel - v0)
+        addvel(data[k], vel - v0)
     end
 end
 
+"""
+    function rotate(data, axis::AbstractPoint3D, angle::Number)
+
+Rotate the whole system of particles around `axis` by `angle` in radian angle
+"""
+function rotate(data, axis::AbstractPoint3D, angle::Number)
+
+end
+
+
+function rotate(data, roll::Number, pitch::Number, yaw::Number)
+    
+end
