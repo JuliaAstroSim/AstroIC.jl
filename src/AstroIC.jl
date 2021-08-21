@@ -14,7 +14,7 @@ using AstroIO
 import Base: show
 import Unitful: Units
 import PhysicalConstants: CODATA2018
-import PhysicalParticles: rotate
+import PhysicalParticles: rotate, rotate_x, rotate_y, rotate_z
 
 using AstroLib
 import AstroLib: planets
@@ -23,6 +23,8 @@ export
     # Tools
     setpos,
     setvel,
+
+    rotate, rotate_x, rotate_y, rotate_z,
 
     # Physics
     vmean,

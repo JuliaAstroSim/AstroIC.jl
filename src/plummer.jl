@@ -90,7 +90,7 @@ Generate initial conditions of Plummer model
 
 # Keywords
 
-- `MaxRadius`: resample particles outside the interested radius. Default is 5 * `VirialRadius`
+- `MaxRadius`: resample particles outside the interested radius. Default is 5 * `VirialRadius`. Set to zero to avoid cutting off.
 
 $_common_keywords
 """

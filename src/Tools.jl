@@ -53,17 +53,3 @@ function setvel(data::Dict, vel::AbstractPoint)
         addvel(data[k], vel - v0)
     end
 end
-
-"""
-    function rotate(data, axis::AbstractPoint3D, angle::Number)
-
-Rotate the whole system of particles around `axis` by `angle` in radian angle
-"""
-function rotate(data, axis::AbstractPoint3D, angle::Number)
-
-end
-
-
-function rotate(data, roll::Number, pitch::Number, yaw::Number)
-    
-end
