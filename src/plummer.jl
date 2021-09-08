@@ -126,12 +126,12 @@ function generate(config::PlummerStarCluster, units = uAstro;
     vel = uconvert.(uVel, vel)
     
     # Packing
-    particles = [Star(uAstro, id = i) for i in 1:NumSamples]
+    particles = StructArray(Star(uAstro, id = i) for i in 1:NumSamples)
     assign_particles(particles, :Pos, pos)
     assign_particles(particles, :Vel, vel)
     
     Mmean = config.TotalMass / NumSamples
     assign_particles(particles, :Mass, Mmean)
 
-    return Dict("stars" => particles)
+    return particles
 end

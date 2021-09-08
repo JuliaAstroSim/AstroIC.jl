@@ -1,5 +1,6 @@
 """
     function addpos(data::Array, pos::AbstractPoint)
+    function addpos(data::StructArray, pos::AbstractPoint)
 
 Add `pos` to `:Pos` of all particles
 """
@@ -9,8 +10,16 @@ function addpos(data::Array, pos::AbstractPoint)
     end
 end
 
+function addpos(data::StructArray, pos::AbstractPoint)
+    Pos = data.Pos
+    for i in 1:length(data)
+        Pos[i] += pos
+    end
+end
+
 """
     function addvel(data::Array, vel::AbstractPoint)
+    function addvel(data::StructArray, vel::AbstractPoint)
 
 Add `vel` to `:Vel` of all particles
 """
@@ -20,36 +29,29 @@ function addvel(data::Array, vel::AbstractPoint)
     end
 end
 
+function addvel(data::StructArray, vel::AbstractPoint)
+    Vel = data.Vel
+    for i in 1:length(data)
+        Vel[i] += vel
+    end
+end
+
 """
-    function setpos(data, pos::AbstractPoint)
+    function setpos(data::Union{Array, StructArray}, pos::AbstractPoint)
 
 Set system center (middle value) to `pos`
 """
-function setpos(data::Array, pos::AbstractPoint)
+function setpos(data::Union{Array, StructArray}, pos::AbstractPoint)
     p0 = median(data, :Pos)
     addpos(data, pos - p0)
 end
 
-function setpos(data::Dict, pos::AbstractPoint)
-    p0 = median(data, :Pos)
-    for k in keys(data)
-        addpos(data[k], pos - p0)
-    end
-end
-
 """
-    function setvel(data, vel::AbstractPoint)
+    function setvel(data::Union{Array, StructArray}, vel::AbstractPoint)
 
 Set system velocity (mass weighted average) to `vel`
 """
-function setvel(data::Array, vel::AbstractPoint)
+function setvel(data::Union{Array, StructArray}, vel::AbstractPoint)
     v0 = averagebymass(data, :Vel)
     addvel(data, vel - v0)
-end
-
-function setvel(data::Dict, vel::AbstractPoint)
-    v0 = averagebymass(data, :Vel)
-    for k in keys(data)
-        addvel(data[k], vel - v0)
-    end
 end

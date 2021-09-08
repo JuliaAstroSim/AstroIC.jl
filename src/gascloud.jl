@@ -117,7 +117,7 @@ function generate(config::GasCloud, units = uAstro;
     vrand = randn_pvector(Nx * Ny * Nz)
     vel = normalize.(vrand) * v
     
-    data = Dict("gases" => empty([SPHGas(units)]))
+    data = empty([Star(units)])
     id = 1
     for i in 1:length(x)
         @inbounds r2 = pos[i] * pos[i]
@@ -127,9 +127,9 @@ function generate(config::GasCloud, units = uAstro;
 
         if r2 <= R^2
             mass = config.rho0 * R^2 / r2 * Lx * Ly * Lz
-            @inbounds push!(data["gases"], setproperties!!(SPHGas(units; id), Pos = pos[i], Vel = vel[i], Mass = mass))
+            @inbounds push!(data, setproperties!!(SPHGas(units; id), Pos = pos[i], Vel = vel[i], Mass = mass))
             id += 1
         end
     end
-    return data
+    return StructArray(data)
 end

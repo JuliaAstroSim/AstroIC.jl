@@ -2,14 +2,16 @@ module AstroIC
 
 __precompile__(true)
 
+using Reexport
 using Unitful, UnitfulAstro
 using Distributions
 using Random
 using BangBang
 using Dates
+using StructArrays
 
-using PhysicalParticles
-using AstroIO
+@reexport using PhysicalParticles
+@reexport using AstroIO
 
 import Base: show
 import Unitful: Units

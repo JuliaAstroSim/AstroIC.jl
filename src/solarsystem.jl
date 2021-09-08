@@ -36,15 +36,10 @@ function solarsystem(date::Real)
     coords1 = [helio2xyz(date + 1.0 / 86400.0, i) for i in 1:8] # Positions at next second
     vels = (coords1 - coords) / 1.0u"s"                         # Velocity is simply dx/dt
 
-    particles = [Star(uSI) for i in 1:8]
-    for i in 1:8
-        particles[i] = setproperties!!(particles[i],
-            Pos = coords[i],
-            Vel = vels[i],
-            Mass = masses[i],
-            ID = i,
-        )
-    end
+    particles = StructArray(Star(uSI, id = i) for i in 1:8)
+    particles.Pos .= coords
+    particles.Vel .= vels
+    particles.Mass .= masses
 
     # Sun
     sun = Star(uSI)
@@ -52,7 +47,7 @@ function solarsystem(date::Real)
     sunRA, sunDEC = sunpos(date)[1:2]
     sunDistance = uconvert(u"m", 1.0u"AU")
 
-    return Dict("stars" => [sun; particles])
+    return particles
 end
 
 solarsystem(date::DateTime) = solarsystem(jdcnv(date))
