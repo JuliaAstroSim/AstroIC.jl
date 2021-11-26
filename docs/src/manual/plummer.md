@@ -7,6 +7,7 @@ generate(::PlummerStarCluster)
 
 ```@repl plummer
 using AstroIC
+using UnitfulAstro
 
 # config
 config = PlummerStarCluster(
