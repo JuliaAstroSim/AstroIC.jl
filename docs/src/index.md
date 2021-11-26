@@ -1,13 +1,13 @@
-# AstroPlot.jl
+# AstroIC.jl
 
-*Ready-to-use plotting tools for astrophysical simulation data*
+*Generates initial conditions for astrophysical simulations*
+
+Source code: [https://github.com/JuliaAstroSim/AstroIC.jl](https://github.com/JuliaAstroSim/AstroIC.jl)
 
 ## Package Feature
 
-- Plot in the REPL
-- Interactive & 3D visualization of data
-- Fast plot using OpenGL supported by Makie
-- Full support of [JuliaAstroSim](https://github.com/JuliaAstroSim) ecosystem
+- Plummer model
+- Solar system
 
 ## Manual Outline
 

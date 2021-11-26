@@ -1,7 +1,5 @@
 # Package Guide
 
-AstroIC.jl generates initial conditions for astrophysical simulations
-
 ## Installation
 
 From the Julia REPL, type `]` to enter the Pkg REPL mode and run
