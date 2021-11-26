@@ -1,14 +1,3 @@
-mutable struct PlummerStarCluster{I, Len, MASS, GM} <: InitialConditionConfig
-    collection::Collection
-    NumSamples::I
-
-    VirialRadius::Len
-
-    TotalMass::MASS
-
-    model::GM
-end
-
 """
     struct PlummerStarCluster
 
@@ -21,6 +10,17 @@ end
 - `G` Newtonian constant of gravitation
 - `model` gravity model [ Newton | MOND ]
 """
+mutable struct PlummerStarCluster{I, Len, MASS, GM} <: InitialConditionConfig
+    collection::Collection
+    NumSamples::I
+
+    VirialRadius::Len
+
+    TotalMass::MASS
+
+    model::GM
+end
+
 function PlummerStarCluster(;
         collection::Collection = STAR,
         NumSamples::Int64 = 1000,

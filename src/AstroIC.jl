@@ -25,8 +25,8 @@ export
     # Tools
     setpos,
     setvel,
-
-    rotate, rotate_x, rotate_y, rotate_z,
+    addpos,
+    addvel,
 
     # Physics
     vmean,

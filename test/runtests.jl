@@ -3,8 +3,9 @@ using Test
 using Unitful, UnitfulAstro
 using AstroIO, PhysicalParticles
 
+using Dates
 using AstroIC
 
-@testset "Plummer sphere" begin
-    @test 1 == 1
-end
+include("tools.jl")
+include("plummer.jl")
+include("solarsystem.jl")

@@ -2,15 +2,40 @@
 
 Initial condition generator for astrophysical simulations
 
+[![codecov](https://codecov.io/gh/JuliaAstroSim/AstroIC.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/JuliaAstroSim/AstroIC.jl)
+[![][docs-dev-img]][docs-dev-url]
+
 ## Installation
 
 ```julia
 ]add AstroIC
 ```
+
 or
+
 ```julia
-]add https://github.com/JuliaAstroSim/AstroIC.jl
+using Pkg; Pkg.add("AstroIC")
 ```
+
+or
+
+```julia
+using Pkg; Pkg.add("https://github.com/JuliaAstroSim/AstroIC.jl")
+```
+
+To test the Package:
+```julia
+]test AstroIC
+```
+
+## Documentation
+
+- [**Dev**][docs-dev-url] &mdash; *documentation of the in-development version.*
+
+[docs-dev-img]: https://img.shields.io/badge/docs-dev-blue.svg
+[docs-dev-url]: https://juliaastrosim.github.io/AstroIC.jl/dev
+
+For beginners, it is highly recommended to read the [documentation of PhysicalParticles.jl](https://juliaastrosim.github.io/PhysicalParticles.jl/dev/).
 
 ## Usage
 
