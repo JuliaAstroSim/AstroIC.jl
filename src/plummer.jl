@@ -27,7 +27,7 @@ function PlummerStarCluster(;
         VirialRadius::Number = 0.010u"kpc",
         TotalMass::Number = 1.0e5u"Msun",
 
-        model::GravModel = Newton(),
+        model::GravityModel = Newton(),
     )
     
     return PlummerStarCluster(
@@ -70,16 +70,16 @@ function plummer_vel_sigma2(r::Number, VirialRadius::Number, Mass::Number, G::Nu
     return G * Mass / sqrt(r^2 + VirialRadius^2) / 6.0
 end
 
-function plummer_vel_sigma2(r::Number, VirialRadius::Number, Mass::Number, G::Number, ::MOND)
+function plummer_vel_sigma2(r::Number, VirialRadius::Number, Mass::Number, G::Number, ::MOND1983Milgrom)
     return G * Mass / sqrt(r^2 + VirialRadius^2) / 2.0
 end
 
-function rand_plummervel(r::Number, VirialRadius::Number, Mass::Number, G::Number, model::GravModel)
+function rand_plummervel(r::Number, VirialRadius::Number, Mass::Number, G::Number, model::GravityModel)
     v = sqrt(plummer_vel_sigma2(r, VirialRadius, Mass, G, model))
     return PVector(randn() * v, randn() * v, randn() * v)
 end
 
-function rand_plummervel(r::Array{T,N}, VirialRadius::Number, Mass::Number, G::Number, model::GravModel) where T<:Number where N
+function rand_plummervel(r::Array{T,N}, VirialRadius::Number, Mass::Number, G::Number, model::GravityModel) where T<:Number where N
     return [rand_plummervel(i, VirialRadius, Mass, G, model) for i in r]
 end
 

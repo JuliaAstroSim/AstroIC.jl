@@ -2,6 +2,7 @@ module AstroIC
 
 __precompile__(true)
 
+using PrecompileTools
 using Reexport
 using Unitful, UnitfulAstro
 using Distributions
@@ -17,6 +18,7 @@ import Base: show
 import Unitful: Units
 import PhysicalConstants: CODATA2018
 import PhysicalParticles: rotate, rotate_x, rotate_y, rotate_z
+using AstroSimBase
 
 using AstroLib
 import AstroLib: planets
@@ -30,10 +32,6 @@ export
 
     # Physics
     vmean,
-
-    GravModel,
-        MOND,
-        Newton,
 
     PlummerStarCluster,
     GasCloud,
@@ -52,7 +50,6 @@ _common_keywords = """
 - `constants`
 """
 
-include("Traits.jl")
 include("Tools.jl")
 include("physics.jl")
 
@@ -60,6 +57,7 @@ include("plummer.jl")
 include("gascloud.jl")
 include("solarsystem.jl")
 
+include("precompile.jl")
 
 """
     function generate(::InitialConditionConfig, units; kw...)
