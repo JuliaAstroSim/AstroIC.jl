@@ -3,6 +3,7 @@ module AstroIC
 __precompile__(true)
 
 using PrecompileTools
+using DocStringExtensions
 using Reexport
 using Unitful, UnitfulAstro
 using Distributions

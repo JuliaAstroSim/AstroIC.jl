@@ -1,26 +1,20 @@
 """
-    struct PlummerStarCluster
-
-## fields
-
-- `collection` particle type
-- `NumSamples` amount of particles
-- `VirialRadius`
-- `TotalMass` mass are seperated equally to all particles
-- `G` Newtonian constant of gravitation
-- `model` gravity model [ Newton | MOND ]
+$(TYPEDFIELDS)
 """
 mutable struct PlummerStarCluster{I, Len, MASS, GM} <: InitialConditionConfig
     collection::Collection
+    "amount of particles"
     NumSamples::I
-
     VirialRadius::Len
-
+    "mass are seperated equally to all particles"
     TotalMass::MASS
-
+    "gravity model [ Newton | MOND ]"
     model::GM
 end
 
+"""
+$(TYPEDSIGNATURES)
+"""
 function PlummerStarCluster(;
         collection::Collection = STAR,
         NumSamples::Int64 = 1000,
@@ -84,9 +78,11 @@ function rand_plummervel(r::Array{T,N}, VirialRadius::Number, Mass::Number, G::N
 end
 
 """
-    function generate(config::PlummerStarCluster, units = uAstro; kw...)
+$(TYPEDSIGNATURES)
 
 Generate initial conditions of Plummer model
+
+Automatically promote to `Measurement` if the parameters in config has `Measurement` type
 
 # Keywords
 
@@ -126,7 +122,9 @@ function generate(config::PlummerStarCluster, units = uAstro;
     vel = uconvert.(uVel, vel)
     
     # Packing
-    particles = StructArray(Star(units, id = i) for i in 1:NumSamples)
+    Promote = ismeasurement(config.VirialRadius) || ismeasurement(config.TotalMass)
+    Promote && @info "Promoting to `Measurement`"
+    particles = StructArray(Star(units, id = i, Measurement=Promote) for i in 1:NumSamples)
     assign_particles(particles, :Pos, pos)
     assign_particles(particles, :Vel, vel)
     
