@@ -8,4 +8,5 @@ using AstroIC
 
 include("tools.jl")
 include("plummer.jl")
+include("disk.jl")
 include("solarsystem.jl")

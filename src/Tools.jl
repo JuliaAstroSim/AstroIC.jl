@@ -55,3 +55,29 @@ function setvel(data::Union{Array, StructArray}, vel::AbstractPoint)
     v0 = averagebymass(data, :Vel)
     addvel(data, vel - v0)
 end
+
+
+"""
+$(TYPEDSIGNATURES)
+Generate `PVector2D` from radius
+"""
+function rand_pos_2d(r::Number)
+    gamma = rand()
+
+    x = r * cos(2.0pi*gamma)
+    y = r * sin(2.0pi*gamma)
+    return PVector2D(x, y)
+end
+
+"""
+$(TYPEDSIGNATURES)
+Generate `PVector` from radius
+"""
+function rand_pos_3d(r::Number)
+    eta, gamma = rand(2)
+
+    x = r * sin(acos(2.0eta-1.0)) * cos(2.0pi*gamma)
+    y = r * sin(acos(2.0eta-1.0)) * sin(2.0pi*gamma)
+    z = r * (2.0eta-1.0)
+    return PVector(x, y, z)
+end

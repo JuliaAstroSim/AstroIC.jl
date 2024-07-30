@@ -47,19 +47,6 @@ end
 
 @inline plummer_pdfr_inv(VirialRadius::Number, rnd::AbstractFloat) = VirialRadius/(rnd^(-2.0/3.0)-1.0)^0.5
 
-function rand_plummerpos(r::Number, VirialRadius::Number)
-    eta, gamma = rand(2)
-
-    x = r * sin(acos(2.0eta-1.0)) * cos(2.0pi*gamma)
-    y = r * sin(acos(2.0eta-1.0)) * sin(2.0pi*gamma)
-    z = r * (2.0eta-1.0)
-    return PVector(x, y, z)
-end
-
-function rand_plummerpos(r::Array{T,N}, VirialRadius::Number) where T<:Number where N
-    return [rand_plummerpos(i, VirialRadius) for i in r]
-end
-
 function plummer_vel_sigma2(r::Number, VirialRadius::Number, Mass::Number, G::Number, ::Newton)
     return G * Mass / sqrt(r^2 + VirialRadius^2) / 6.0
 end
@@ -100,19 +87,19 @@ function generate(config::PlummerStarCluster, units = uAstro;
     VirialRadius = uconvert(uLength, config.VirialRadius)
 
     # generate radii
+    if MaxRadius < VirialRadius
+        @warn "`MaxRadius` is smaller than `VirialRadius`, this may cause unphyiscal errors!"
+    end
+
     r = plummer_pdfr_inv.(VirialRadius, rand(NumSamples))
-    
-    # MaxRadius
-    if MaxRadius > VirialRadius
-        for i in eachindex(r)
-            while r[i] > MaxRadius
-                r[i] = plummer_pdfr_inv(VirialRadius, rand())
-            end
+    for i in eachindex(r)
+        while r[i] > MaxRadius
+            r[i] = plummer_pdfr_inv(VirialRadius, rand())
         end
     end
 
     # Sampling
-    pos = rand_plummerpos(r, VirialRadius)
+    pos = rand_pos_3d.(r)
     vel = rand_plummervel(r, VirialRadius, config.TotalMass, constants.G, config.model)
 
     # Cancel out shifting

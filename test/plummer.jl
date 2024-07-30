@@ -1,7 +1,7 @@
 @testset "Plummer" begin
     config = PlummerStarCluster(
         collection = STAR,
-        NumSamples = 1000,
+        NumSamples = 100,
         VirialRadius = 0.010u"kpc",
         TotalMass = 1.0e5u"Msun",
         model = AstroIC.Newton(),
@@ -12,5 +12,5 @@
         MaxRadius = 0.050u"kpc",
     )
 
-    @test length(data) == 1000
+    @test length(data) == 100
 end
