@@ -37,6 +37,7 @@ export
     PlummerStarCluster,
     GasCloud,
     ExponentialDisk,
+    Bulge,
 
     solarsystem,
 
@@ -57,6 +58,7 @@ include("physics.jl")
 
 include("plummer.jl")
 include("disk.jl")
+include("bulge.jl")
 include("gascloud.jl")
 include("solarsystem.jl")
 
