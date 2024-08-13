@@ -11,6 +11,7 @@ using Random
 using BangBang
 using Dates
 using StructArrays
+using Dierckx
 
 @reexport using PhysicalParticles
 @reexport using AstroIO

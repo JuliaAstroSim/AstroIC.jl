@@ -118,15 +118,39 @@ end
 
 """
 $(TYPEDSIGNATURES)
+Rotate along the positive z-axis.
+- `ratio`: rotational motion v.s. random motion. If equals `1`, only rotational component
+"""
+function rotational_velocity_acc(x, y, z, a, ratio = 1.0)
+    u = unit(x)
+    r = sqrt(x^2 + y^2 + z^2)
+    v = sqrt(a * r)
+    v_vec = -normalize(PVector(ustrip(u,x), ustrip(u,y), 0.0) × PVector(0.0, 0.0, 1.0)) * v
+    v_vec = ratio * v_vec + (1-ratio) * randn(PVector{Float64}) * v
+end
+
+"""
+$(TYPEDSIGNATURES)
+Rotate along the positive z-axis.
+- `ratio`: rotational motion v.s. random motion. If equals `1`, only rotational component
+"""
+function rotational_velocity(x, y, v, ratio = 1.0)
+    u = unit(x)
+    v_vec = -normalize(PVector(ustrip(u,x), ustrip(u,y), 0.0) × PVector(0.0, 0.0, 1.0)) * v
+    v_vec = ratio * v_vec + (1-ratio) * randn(PVector{Float64}) * v
+end
+
+"""
+$(TYPEDSIGNATURES)
 
 """
 function generate(config::ExponentialDisk, units = uAstro;
         RotationCurve = nothing,
         MaxRadius = 5 * config.ScaleRadius,
         MaxHeight = MaxRadius,
-        k = 1, # degree of rotation curve interpolation/extrapolation spline (1 = linear, 2 = quadratic, 3 = cubic, up to 5)
+        k = 2, # degree of rotation curve interpolation/extrapolation spline (1 = linear, 2 = quadratic, 3 = cubic, up to 5)
         bc = "nearest", # behavior when evaluating the spline outside the support domain, which is (minimum(x), maximum(x)). The allowed values are "nearest", "zero", "extrapolate", "error"
-        rotational_ratio = 0,
+        rotational_ratio = 0.9,
     )
     uLen = getuLength(units)
     uVel = getuVel(units)
@@ -184,9 +208,9 @@ function generate(config::ExponentialDisk, units = uAstro;
         vel = [PVector(uVel) for i in 1:NumSamples]
     else
         xc, vc = RotationCurve
-        spl = Spline1D(ustrip.(unit(eltype(xc)), xc), vc; k, bc)
-        v = spl(ustrip.(unit(eltype(R)), R))
-        vel = rotational_velocity.(pos.x, pos.y, pos.z, v, rotational_ratio)
+        spl = Spline1D(ustrip.(uLen, xc), ustrip.(uVel, vc); k, bc)
+        v = spl(ustrip.(uLen, R)) * uVel
+        vel = rotational_velocity.(pos.x, pos.y, v, rotational_ratio)
     end
 
     # Packing
