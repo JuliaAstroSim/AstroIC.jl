@@ -2,7 +2,7 @@
 $(TYPEDEF)
 $(TYPEDFIELDS)
 """
-mutable struct ExponentialDisk{I, Len, MASS} <: InitialConditionConfig
+mutable struct ExponentialDisc{I, Len, MASS} <: InitialConditionConfig
     collection::Collection
     NumSamples::I
 
@@ -19,7 +19,7 @@ $(TYPEDSIGNATURES)
 - `collection` particle type
 - `NumSamples` amount of particles
 """
-function ExponentialDisk(;
+function ExponentialDisc(;
         collection::Collection = STAR,
         NumSamples::Int64 = 1000,
         TotalMass::Number = 1.0e10u"Msun",
@@ -27,10 +27,10 @@ function ExponentialDisk(;
         ScaleHeight::Number = 0.02u"kpc",
         HoleRadius::Number = 0.0u"kpc",
     )
-    return ExponentialDisk(collection, NumSamples, TotalMass, ScaleRadius, ScaleHeight, HoleRadius)
+    return ExponentialDisc(collection, NumSamples, TotalMass, ScaleRadius, ScaleHeight, HoleRadius)
 end
 
-function Base.show(io::IO, config::ExponentialDisk)
+function Base.show(io::IO, config::ExponentialDisc)
     print(io,
         "Config of Exponential Disk Initial Conditions:",
         "\n    Particle Collection: ", config.collection,
@@ -144,7 +144,7 @@ end
 $(TYPEDSIGNATURES)
 
 """
-function generate(config::ExponentialDisk, units = uAstro;
+function generate(config::ExponentialDisc, units = uAstro;
         RotationCurve = nothing,
         MaxRadius = 5 * config.ScaleRadius,
         MaxHeight = MaxRadius,
@@ -211,6 +211,12 @@ function generate(config::ExponentialDisk, units = uAstro;
         spl = Spline1D(ustrip.(uLen, xc), ustrip.(uVel, vc); k, bc)
         v = spl(ustrip.(uLen, R)) * uVel
         vel = rotational_velocity.(pos.x, pos.y, v, rotational_ratio)
+
+        # Cancel out shifting
+        v0 = mean(vel)
+        vel = vel .- v0
+        uVel = getuVel(units)
+        vel = uconvert.(uVel, vel)
     end
 
     # Packing

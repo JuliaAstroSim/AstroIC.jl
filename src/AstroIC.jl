@@ -37,7 +37,7 @@ export
 
     PlummerStarCluster,
     GasCloud,
-    ExponentialDisk,
+    ExponentialDisc,
     Bulge,
 
     solarsystem,
@@ -73,7 +73,7 @@ Generate initial conditions in `units`
 # Usable IC configs
 - `PlummerStarCluster`
 - `GasCloud`
-- `ExponentialDisk`
+- `ExponentialDisc`
 
 $_common_keywords
 """

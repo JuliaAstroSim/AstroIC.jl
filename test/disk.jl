@@ -1,5 +1,5 @@
 @testset "Disk" begin
-    config = ExponentialDisk(
+    config = ExponentialDisc(
         collection = STAR,
         NumSamples = 100,
         TotalMass = 1.0e8u"Msun",
