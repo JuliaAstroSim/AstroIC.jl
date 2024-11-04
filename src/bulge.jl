@@ -45,6 +45,11 @@ function Base.show(io::IO, config::Bulge)
     )
 end
 
+function pdf(config::Bulge, R, z)
+    r_prime = sqrt(R^2 + (z / config.q)^2)
+    return exp(-r_prime^2/ustrip(config.CutRadius)^2) / (1 + r_prime/ustrip(config.ScaleRadius))^config.α * 2π*R
+end
+
 """
 $(TYPEDSIGNATURES)
 
@@ -52,6 +57,7 @@ $(TYPEDSIGNATURES)
 function generate(config::Bulge, units = uAstro;
     RotationCurve = nothing,
     MaxRadius = 5 * config.ScaleRadius,
+    # MaxHeight = 5 * config.ScaleRadius * config.q,
     MaxHeight = MaxRadius,
 )
     uLen = getuLength(units)
@@ -65,16 +71,29 @@ function generate(config::Bulge, units = uAstro;
 
     R = eltype(config.ScaleRadius)[]
     z = eltype(config.ScaleRadius)[]
-    
+
+    target(xy) = -pdf(config,xy[1],xy[2])
+    pdf_maximum = -minimum_func(target, [ustrip(config.ScaleRadius), ustrip(config.ScaleRadius)*config.q])[1]
+
+    # rejection sampling
     while length(R) < NumSamples
-        R_rand = randn() * config.CutRadius / sqrt(2)
-        z_rand = randn() * config.q * config.CutRadius / sqrt(2)
-        r_prime = sqrt(R_rand^2 + (z_rand/config.q)^2)
-        if rand() <= (1 + r_prime / config.ScaleRadius)^(-config.α)
-            push!(R, abs(R_rand))
-            push!(z, z_rand)
+        R_rand = rand() * ustrip(MaxRadius)
+        z_rand = rand() * 2*ustrip(MaxHeight) - ustrip(MaxHeight)
+        if rand() < pdf(config, R_rand, z_rand) / pdf_maximum
+            push!(R, R_rand * uLen)
+            push!(z, z_rand * uLen)
         end
     end
+
+    # while length(R) < NumSamples
+    #     R_rand = randn() * config.CutRadius / sqrt(2)
+    #     z_rand = randn() * config.q * config.CutRadius / sqrt(2)
+    #     r_prime = sqrt(R_rand^2 + (z_rand/config.q)^2)
+    #     if rand() <= (1 + r_prime / config.ScaleRadius)^(-config.α)
+    #         push!(R, abs(R_rand))
+    #         push!(z, z_rand)
+    #     end
+    # end
 
     pos2d = StructArray(rand_pos_2d.(R))
     pos = StructArray(PVector.(pos2d.x, pos2d.y, z))

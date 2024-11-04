@@ -11,7 +11,6 @@
 
     data = generate(
         config,
-        MaxRadius = 0.5u"kpc",
     )
 
     @test length(data) == 100

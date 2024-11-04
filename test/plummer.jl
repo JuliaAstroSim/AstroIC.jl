@@ -4,7 +4,7 @@
         NumSamples = 100,
         VirialRadius = 0.010u"kpc",
         TotalMass = 1.0e5u"Msun",
-        model = AstroIC.Newton(),
+        model = AstroSimBase.Newton(),
     )
 
     data = generate(

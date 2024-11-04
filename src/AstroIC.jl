@@ -12,15 +12,18 @@ using BangBang
 using Dates
 using StructArrays
 using Dierckx
+using QuadGK
+using Optim
 
 @reexport using PhysicalParticles
 @reexport using AstroIO
 
 import Base: show
 import Unitful: Units
+import Distributions: pdf
 import PhysicalConstants: CODATA2018
 import PhysicalParticles: rotate, rotate_x, rotate_y, rotate_z
-using AstroSimBase
+@reexport using AstroSimBase
 
 using AstroLib
 import AstroLib: planets
@@ -56,6 +59,7 @@ _common_keywords = """
 
 include("Tools.jl")
 include("physics.jl")
+include("distribution.jl")
 
 include("plummer.jl")
 include("disk.jl")

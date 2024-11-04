@@ -81,3 +81,27 @@ function rand_pos_3d(r::Number)
     z = r * (2.0eta-1.0)
     return PVector(x, y, z)
 end
+
+"""
+$(TYPEDSIGNATURES)
+Rotate along the positive z-axis.
+- `ratio`: rotational motion v.s. random motion. If equals `1`, only rotational component
+"""
+function rotational_velocity_acc(x, y, z, a, ratio = 1.0)
+    u = unit(x)
+    r = sqrt(x^2 + y^2 + z^2)
+    v = sqrt(a * r)
+    v_vec = -normalize(PVector(ustrip(u,x), ustrip(u,y), 0.0) × PVector(0.0, 0.0, 1.0)) * v
+    v_vec = ratio * v_vec + (1-ratio) * randn(PVector{Float64}) * v
+end
+
+"""
+$(TYPEDSIGNATURES)
+Rotate along the positive z-axis.
+- `ratio`: rotational motion v.s. random motion. If equals `1`, only rotational component
+"""
+function rotational_velocity(x, y, v, ratio = 1.0)
+    u = unit(x)
+    v_vec = -normalize(PVector(ustrip(u,x), ustrip(u,y), 0.0) × PVector(0.0, 0.0, 1.0)) * v
+    v_vec = ratio * v_vec + (1-ratio) * randn(PVector{Float64}) * v
+end

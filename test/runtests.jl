@@ -1,6 +1,8 @@
 using Test
 
 using Unitful, UnitfulAstro
+
+using AstroSimBase
 using AstroIO, PhysicalParticles
 
 using Dates

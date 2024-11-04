@@ -21,7 +21,7 @@ function PlummerStarCluster(;
         VirialRadius::Number = 0.010u"kpc",
         TotalMass::Number = 1.0e5u"Msun",
 
-        model::GravityModel = Newton(),
+        model::GravityModel = AstroSimBase.Newton(),
     )
     
     return PlummerStarCluster(
@@ -47,7 +47,7 @@ end
 
 @inline plummer_pdfr_inv(VirialRadius::Number, rnd::AbstractFloat) = VirialRadius/(rnd^(-2.0/3.0)-1.0)^0.5
 
-function plummer_vel_sigma2(r::Number, VirialRadius::Number, Mass::Number, G::Number, ::Newton)
+function plummer_vel_sigma2(r::Number, VirialRadius::Number, Mass::Number, G::Number, ::AstroSimBase.Newton)
     return G * Mass / sqrt(r^2 + VirialRadius^2) / 6.0
 end
 
