@@ -92,7 +92,8 @@ function rotational_velocity_acc(x, y, z, a, ratio = 1.0)
     r = sqrt(x^2 + y^2 + z^2)
     v = sqrt(a * r)
     v_vec = -normalize(PVector(ustrip(u,x), ustrip(u,y), 0.0) × PVector(0.0, 0.0, 1.0)) * v
-    v_vec = ratio * v_vec + (1-ratio) * randn(PVector{Float64}) * v
+    v_vec = ratio * v_vec + (1-ratio) * randn(PVector{Float64}) * v # this will change the average velocity
+    v_vec = v_vec + (1-ratio) * randn(PVector{Float64}) * v
 end
 
 """
@@ -103,5 +104,6 @@ Rotate along the positive z-axis.
 function rotational_velocity(x, y, v, ratio = 1.0)
     u = unit(x)
     v_vec = -normalize(PVector(ustrip(u,x), ustrip(u,y), 0.0) × PVector(0.0, 0.0, 1.0)) * v
-    v_vec = ratio * v_vec + (1-ratio) * randn(PVector{Float64}) * v
+    # v_vec = ratio * v_vec + (1-ratio) * randn(PVector{Float64}) * v # this will change the average velocity
+    v_vec = v_vec + (1-ratio) * randn(PVector{Float64}) * v
 end

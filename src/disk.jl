@@ -46,7 +46,7 @@ function pdf(config::ExponentialDisc, R, z)
     if iszero(config.HoleRadius)
         return exp(-abs(z)/ustrip(config.ScaleHeight) - R/ustrip(config.ScaleRadius)) / ustrip(config.ScaleHeight) * 2π * R
     else
-        return exp(-ustrip(config.HoleRadius)/R - R/ustrip(config.ScaleRadius)) * sech(z/ustrip(config.ScaleHeight)/2)^2 / 4 / ustrip(config.ScaleHeight) * 2π * R
+        return exp(-ustrip(config.HoleRadius)/R - R/ustrip(config.ScaleRadius)) * sech(z/ustrip(config.ScaleHeight)/2)^2 * 2π * R
     end
 end
 
@@ -56,7 +56,7 @@ $(TYPEDSIGNATURES)
 """
 function generate(config::ExponentialDisc, units = uAstro;
     RotationCurve = nothing,
-    MaxRadius = 5 * config.ScaleRadius,
+    MaxRadius = 20 * config.ScaleRadius,
     MaxHeight = MaxRadius,
     k = 2, # degree of rotation curve interpolation/extrapolation spline (1 = linear, 2 = quadratic, 3 = cubic, up to 5)
     bc = "nearest", # behavior when evaluating the spline outside the support domain, which is (minimum(x), maximum(x)). The allowed values are "nearest", "zero", "extrapolate", "error"
@@ -110,10 +110,17 @@ function generate(config::ExponentialDisc, units = uAstro;
     # end
 
     R = eltype(config.ScaleRadius)[]
+    sizehint!(R, NumSamples)
     z = eltype(config.ScaleRadius)[]
+    sizehint!(z, NumSamples)
 
     target(xy) = -pdf(config,xy[1],xy[2])
-    pdf_maximum = -minimum_func(target, [ustrip(config.ScaleRadius), ustrip(config.ScaleRadius)])[1]
+    if iszero(config.HoleRadius)
+        pdf_maximum = -minimum_func(target, [ustrip(config.ScaleRadius), ustrip(config.ScaleRadius)])[1]
+    else
+        pdf_maximum = pdf(config, ustrip(sqrt(config.ScaleRadius * config.HoleRadius)), 0.0)
+    end
+    # @show pdf_maximum
 
     # rejection sampling
     while length(R) < NumSamples

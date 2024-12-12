@@ -56,8 +56,7 @@ $(TYPEDSIGNATURES)
 """
 function generate(config::Bulge, units = uAstro;
     RotationCurve = nothing,
-    MaxRadius = 5 * config.ScaleRadius,
-    # MaxHeight = 5 * config.ScaleRadius * config.q,
+    MaxRadius = 20 * config.ScaleRadius,
     MaxHeight = MaxRadius,
 )
     uLen = getuLength(units)
@@ -70,7 +69,9 @@ function generate(config::Bulge, units = uAstro;
     end
 
     R = eltype(config.ScaleRadius)[]
+    sizehint!(R, NumSamples)
     z = eltype(config.ScaleRadius)[]
+    sizehint!(z, NumSamples)
 
     target(xy) = -pdf(config,xy[1],xy[2])
     pdf_maximum = -minimum_func(target, [ustrip(config.ScaleRadius), ustrip(config.ScaleRadius)*config.q])[1]
