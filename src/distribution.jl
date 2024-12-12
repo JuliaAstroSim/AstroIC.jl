@@ -93,18 +93,46 @@ Sample from the discrete pdf using rejection method
 !!! attentions
     - Data must be unitless, and have no NaN
     - `x` should start from 0
-    - the maximum of `pdf` would be the width of sampling box
+    - the maximum of `pdf_array` would be the width of sampling box
 """
-function rejection_sampling(x, pdf, rMax, NumSamples)
-    spl = Spline1D(x, pdf)
-    pdf_maximum = maximum(pdf)
+function rejection_sampling(x, pdf_array, rMax, NumSamples)
+    spl = Spline1D(ustrip.(x), ustrip.(pdf_array))
+    pdf_maximum = ustrip(maximum(pdf_array))
 
-    R = eltype(pdf)[]
+    R = eltype(rMax)[]
     sizehint!(R, NumSamples)
 
     while length(R) < NumSamples
         R_rand = rand() * rMax
-        if rand() < spl(R_rand) / pdf_maximum
+        if rand() < spl(ustrip(R_rand)) / pdf_maximum
+            push!(R, R_rand)
+        end
+    end
+    
+    return R
+end
+
+"""
+$(TYPEDSIGNATURES)
+
+Sample from the discrete pdf using rejection method
+
+!!! attentions
+    - Data must be unitless, and have no NaN
+    - `x` should start from 0
+    - the maximum of `pdf` would be the width of sampling box
+"""
+function rejection_sampling(pdf::Function, rMax, NumSamples)
+    x = collect(LinRange(rMax/10000, rMax, 10000))
+    pdf_array = pdf.(x)
+    pdf_maximum = maximum(pdf_array)
+
+    R = eltype(rMax)[]
+    sizehint!(R, NumSamples)
+
+    while length(R) < NumSamples
+        R_rand = rand() * rMax
+        if rand() < pdf(R_rand) / pdf_maximum
             push!(R, R_rand)
         end
     end

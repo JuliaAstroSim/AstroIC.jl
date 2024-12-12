@@ -6,6 +6,7 @@ using PrecompileTools
 using DocStringExtensions
 using Reexport
 using Unitful, UnitfulAstro
+using DataFrames
 using Distributions
 using Random
 using BangBang
@@ -42,6 +43,7 @@ export
     GasCloud,
     ExponentialDisc,
     Bulge,
+    SphericalSystem,
 
     solarsystem,
 
@@ -64,6 +66,7 @@ include("distribution.jl")
 include("plummer.jl")
 include("disk.jl")
 include("bulge.jl")
+include("spherical.jl")
 include("gascloud.jl")
 include("solarsystem.jl")
 
