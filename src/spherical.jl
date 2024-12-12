@@ -60,10 +60,10 @@ function generate(config::SphericalSystem, units = uAstro;
     dx = x[2] - x[1]
     if config.mass_shell isa Function
         shell_masses = config.mass_shell.(x)
-        TotalMass = PhysicalParticles.NumericalIntegration.integrate(x, shell_masses) * ustrip(uLen, dx)
+        TotalMass = PhysicalParticles.NumericalIntegration.integrate(x, shell_masses)
     elseif config.mass_shell isa Dict || config.mass_shell isa DataFrame
         spl = Spline1D(ustrip.(uLen, config.mass_shell["r"]), ustrip.(uMass/uLen, config.mass_shell["m"]))
-        TotalMass = PhysicalParticles.NumericalIntegration.integrate(x, spl(ustrip.(uLen, x))*uMass/uLen) * ustrip(uLen, dx)
+        TotalMass = PhysicalParticles.NumericalIntegration.integrate(x, spl(ustrip.(uLen, x))*uMass/uLen)
     end
 
     pos = rand_pos_3d.(R)
