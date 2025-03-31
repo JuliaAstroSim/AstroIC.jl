@@ -87,23 +87,23 @@ $(TYPEDSIGNATURES)
 Rotate along the positive z-axis.
 - `ratio`: rotational motion v.s. random motion. If equals `1`, only rotational component
 """
-function rotational_velocity_acc(x, y, z, a, ratio = 1.0)
+function rotational_velocity_acc(x, y, z, a, rot_ratio = 1.0)
     u = unit(x)
     r = sqrt(x^2 + y^2 + z^2)
     v = sqrt(a * r)
-    v_vec = -normalize(PVector(ustrip(u,x), ustrip(u,y), 0.0) × PVector(0.0, 0.0, 1.0)) * v
-    v_vec = ratio * v_vec + (1-ratio) * randn(PVector{Float64}) * v # this will change the average velocity
-    v_vec = v_vec + (1-ratio) * randn(PVector{Float64}) * v
+    v_vec_rot = -normalize(PVector(ustrip(u,x), ustrip(u,y), 0.0) × PVector(0.0, 0.0, 1.0)) * v
+    v_vec = rot_ratio * v_vec_rot + (1-rot_ratio) * normalize(randn(PVector{Float64})) * v 
+    # v_vec = v_vec_rot + (1-rot_ratio) * randn(PVector{Float64}) * v # this will change the average velocity
 end
 
 """
 $(TYPEDSIGNATURES)
 Rotate along the positive z-axis.
-- `ratio`: rotational motion v.s. random motion. If equals `1`, only rotational component
+- `rot_ratio`: rotational motion v.s. random motion. If equals `1`, only rotational component
 """
-function rotational_velocity(x, y, v, ratio = 1.0)
+function rotational_velocity(x, y, v, rot_ratio = 1.0)
     u = unit(x)
-    v_vec = -normalize(PVector(ustrip(u,x), ustrip(u,y), 0.0) × PVector(0.0, 0.0, 1.0)) * v
-    # v_vec = ratio * v_vec + (1-ratio) * randn(PVector{Float64}) * v # this will change the average velocity
-    v_vec = v_vec + (1-ratio) * randn(PVector{Float64}) * v
+    v_vec_rot = -normalize(PVector(ustrip(u,x), ustrip(u,y), 0.0) × PVector(0.0, 0.0, 1.0)) * v
+    v_vec = rot_ratio * v_vec_rot + (1-rot_ratio) * normalize(randn(PVector{Float64})) * v 
+    # v_vec = v_vec_rot + (1-rot_ratio) * randn(PVector{Float64}) * v # this will change the average velocity
 end
