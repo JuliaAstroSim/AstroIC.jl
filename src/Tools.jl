@@ -107,3 +107,14 @@ function rotational_velocity(x, y, v, rot_ratio = 1.0)
     v_vec = rot_ratio * v_vec_rot + (1-rot_ratio) * normalize(randn(PVector{Float64})) * v 
     # v_vec = v_vec_rot + (1-rot_ratio) * randn(PVector{Float64}) * v # this will change the average velocity
 end
+
+
+"""
+$(TYPEDSIGNATURES)
+"""
+function freefall_velocity_acc(x, y, z, a)
+    u = unit(x)
+    r = sqrt(x^2 + y^2 + z^2)
+    v = sqrt(a * r)
+    v_vec = -normalize(PVector(ustrip(u,x), ustrip(u,y), ustrip(u,z))) * v
+end
