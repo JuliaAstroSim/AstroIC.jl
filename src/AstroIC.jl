@@ -17,6 +17,7 @@ using QuadGK
 using Optim
 using CSV
 using UnitfulAngles
+using Measurements
 
 @reexport using PhysicalParticles
 @reexport using AstroIO
@@ -74,6 +75,13 @@ include("solarsystem.jl")
 
 include("data/MW_satellites.jl")
 export load_data_MW_satellites
+
+include("data/SPARC.jl")
+export load_SPARC_LTGs_RC, load_SPARC_LTGs_data, load_li2018_SPARC
+export load_SPARC_Xray_ETGs_data, load_SPARC_rotating_ETGs_data, load_SPARC_rotating_ETGs_RC, load_SPARC_rotating_ETGs_rotmod
+
+include("data/MilkyWay.jl")
+export load_MW_RC_Eilers2019, load_MW_RC_Mroz2019, load_MW_RC_stddev_W21, load_MW_RC_DS_W21
 
 include("precompile.jl")
 
