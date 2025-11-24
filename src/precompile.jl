@@ -14,5 +14,7 @@
         setvel(data, vel)
 
         solarsystem(now())
+
+        load_data_MW_satellites()
     end
 end

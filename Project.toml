@@ -1,13 +1,14 @@
 name = "AstroIC"
 uuid = "5b3ca070-48c3-41ea-b469-89825dd01fde"
-authors = ["islent <leoislent@gmail.com>"]
 version = "0.1.4"
+authors = ["islent <leoislent@gmail.com>"]
 
 [deps]
 AstroIO = "c85a633c-0c3f-44a2-bffe-7f9d0681b3e7"
 AstroLib = "c7932e45-9af1-51e7-9da9-f004cd3a462b"
 AstroSimBase = "c6a34d98-f626-4d8d-b450-a3f124eaada6"
 BangBang = "198e06fe-97b7-11e9-32a5-e1d131e6ad66"
+CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
 Dierckx = "39dd38d3-220a-591b-8e3c-4c3a8c710a94"
@@ -22,6 +23,7 @@ Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 Reexport = "189a3867-3050-52da-a836-e630ba90ab69"
 StructArrays = "09ab397b-f2b6-538f-b94a-2f83cf4a842a"
 Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
+UnitfulAngles = "6fb2a4bd-7999-5318-a3b2-8ad61056cd98"
 UnitfulAstro = "6112ee07-acf9-5e0f-b108-d242c714bf9f"
 
 [compat]
@@ -29,6 +31,7 @@ AstroIO = "0.1"
 AstroLib = "0.4"
 AstroSimBase = "0.1"
 BangBang = "0.3, 0.4, 0.5"
+CSV = "0.10"
 DataFrames = "1"
 Dierckx = "0.5"
 Distributions = "0.25"
@@ -41,6 +44,7 @@ QuadGK = "2"
 Reexport = "1"
 StructArrays = "0.6, 0.7"
 Unitful = "1"
+UnitfulAngles = "0.7"
 UnitfulAstro = "1"
 julia = "1.6"
 

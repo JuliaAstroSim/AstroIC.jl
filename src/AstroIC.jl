@@ -15,6 +15,8 @@ using StructArrays
 using Dierckx
 using QuadGK
 using Optim
+using CSV
+using UnitfulAngles
 
 @reexport using PhysicalParticles
 @reexport using AstroIO
@@ -69,6 +71,9 @@ include("bulge.jl")
 include("spherical.jl")
 include("gascloud.jl")
 include("solarsystem.jl")
+
+include("data/MW_satellites.jl")
+export load_data_MW_satellites
 
 include("precompile.jl")
 

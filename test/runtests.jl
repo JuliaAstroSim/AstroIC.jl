@@ -15,3 +15,8 @@ include("disk.jl")
 include("bulge.jl")
 include("spherical.jl")
 include("solarsystem.jl")
+
+@testset "Load data" begin
+    df = load_data_MW_satellites()
+    @test length(df.Galaxy) == 61
+end
