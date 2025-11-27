@@ -16,6 +16,7 @@
         solarsystem(now())
 
         load_data_MW_satellites()
+        load_data_UFDs()
 
         load_SPARC_LTGs_RC()
         load_SPARC_LTGs_data()

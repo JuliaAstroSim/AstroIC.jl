@@ -20,6 +20,9 @@ include("solarsystem.jl")
     df = load_data_MW_satellites()
     @test length(df.Galaxy) == 61
 
+    df = load_data_UFDs()
+    @test length(df.Galaxy) == 27
+
     @test !isnothing(load_SPARC_LTGs_RC())
     @test !isnothing(load_SPARC_LTGs_data())
     @test !isnothing(load_li2018_SPARC())
