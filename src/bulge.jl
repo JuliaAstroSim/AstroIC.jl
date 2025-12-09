@@ -56,7 +56,7 @@ $(TYPEDSIGNATURES)
 """
 function generate(config::Bulge, units = uAstro;
     RotationCurve = nothing,
-    MaxRadius = 20 * config.ScaleRadius,
+    MaxRadius = 5 * config.ScaleRadius,
     MaxHeight = MaxRadius,
 )
     uLen = getuLength(units)

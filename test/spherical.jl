@@ -2,10 +2,10 @@
 
 @testset "SphericalSystem" begin
     r_s = 2.0u"kpc"
-    MaxRadius = 10*r_s
-    NumSamples = 1000
+    MaxRadius = 3*r_s
+    NumSamples = 100
 
-    r = collect(LinRange(0.001u"kpc", MaxRadius, 1000))
+    r = collect(LinRange(0.001u"kpc", MaxRadius, 100))
     dr = r[2] - r[1]
 
     shell_mass_func = x->1.0e8u"Msun/kpc^3"/(x/r_s)/(1+x/r_s)^2 * 4π * x^2

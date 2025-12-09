@@ -56,7 +56,7 @@ $(TYPEDSIGNATURES)
 """
 function generate(config::ExponentialDisc, units = uAstro;
     RotationCurve = nothing,
-    MaxRadius = 20 * config.ScaleRadius,
+    MaxRadius = 5 * config.ScaleRadius,
     MaxHeight = MaxRadius,
     k = 2, # degree of rotation curve interpolation/extrapolation spline (1 = linear, 2 = quadratic, 3 = cubic, up to 5)
     bc = "nearest", # behavior when evaluating the spline outside the support domain, which is (minimum(x), maximum(x)). The allowed values are "nearest", "zero", "extrapolate", "error"
