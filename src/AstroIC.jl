@@ -85,6 +85,7 @@ export load_SPARC_Xray_ETGs_data, load_SPARC_rotating_ETGs_data, load_SPARC_rota
 
 include("data/MilkyWay.jl")
 export load_MW_RC_Eilers2019, load_MW_RC_Mroz2019, load_MW_RC_stddev_W21, load_MW_RC_DS_W21
+export generate_milkyway_baryon_particles
 
 include("precompile.jl")
 

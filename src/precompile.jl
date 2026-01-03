@@ -31,5 +31,7 @@
         load_MW_RC_Mroz2019()
         load_MW_RC_stddev_W21()
         load_MW_RC_DS_W21()
+
+        generate_milkyway_baryon_particles(500)
     end
 end

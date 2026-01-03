@@ -36,4 +36,7 @@ include("solarsystem.jl")
     @test !isnothing(load_MW_RC_Mroz2019())
     @test !isnothing(load_MW_RC_stddev_W21())
     @test !isnothing(load_MW_RC_DS_W21())
+
+    particles = generate_milkyway_baryon_particles(500)
+    @test length(particles) == 500
 end
