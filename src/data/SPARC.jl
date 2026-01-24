@@ -97,6 +97,24 @@ function load_SPARC_LTGs_data(;
     df[!, :M_h] = zeros(size(df,1))
     df[!, :chi2RC] = zeros(size(df,1))
     df[!, :chi2RAR] = zeros(size(df,1))
+    
+    # Load Rodrigues2018 data if file exists
+    rodrigues_file = joinpath(@__DIR__, "Rodrigues2018a0/41550_2018_498_MOESM3_ESM.xlsx")
+    T = XLSX.readdata(rodrigues_file, "Sheet 1 - Table S3", "A2:L177")
+    df_rodrigues2018 = DataFrame(T[2:end, :], :auto)
+    rename!(df_rodrigues2018, string.(T[1, :]))
+    
+    df[!, "a0_rodrigues2018"] = zeros(length(df.Galaxy))
+    df[!, :a0_rodrigues2018_std_lower] = zeros(length(df.Galaxy))
+    df[!, :a0_rodrigues2018_std_upper] = zeros(length(df.Galaxy))
+    
+    for Galaxy_id in 1:length(df.Galaxy)
+        id = findfirst(x->x==df.Galaxy[Galaxy_id], df_rodrigues2018.Galaxy)
+        if !isnothing(id)
+            df.a0_rodrigues2018[Galaxy_id] = 10^(df_rodrigues2018.var"Log_10 a0"[id]) * 1000
+        end
+    end
+    
     return df
 end
 

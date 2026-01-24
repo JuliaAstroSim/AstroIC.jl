@@ -1,6 +1,6 @@
 name = "AstroIC"
 uuid = "5b3ca070-48c3-41ea-b469-89825dd01fde"
-version = "0.1.4"
+version = "0.1.5"
 authors = ["islent <leoislent@gmail.com>"]
 
 [deps]

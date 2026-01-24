@@ -24,7 +24,9 @@ include("solarsystem.jl")
     @test length(df.Galaxy) == 27
 
     @test !isnothing(load_SPARC_LTGs_RC())
-    @test !isnothing(load_SPARC_LTGs_data())
+    dfSPARC = load_SPARC_LTGs_data()
+    @test !isnothing(dfSPARC)
+    @test !isempty(dfSPARC.a0_rodrigues2018)
     @test !isnothing(load_li2018_SPARC())
     
     @test !isnothing(load_SPARC_Xray_ETGs_data())

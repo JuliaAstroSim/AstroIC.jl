@@ -16,6 +16,7 @@ using Dierckx
 using QuadGK
 using Optim
 using CSV
+using XLSX
 using UnitfulAngles
 using Measurements
 
