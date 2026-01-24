@@ -36,5 +36,6 @@
 
         load_massive_dwarf_CO_RC("NGC1035")
         load_massive_dwarf_DM_RC("NGC1035")
+        load_massive_dwarf_Baryon_RC("NGC1035")
     end
 end

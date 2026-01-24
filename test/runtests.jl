@@ -39,6 +39,7 @@ include("solarsystem.jl")
 
     @test !isnothing(load_massive_dwarf_CO_RC("NGC1035"))
     @test !isnothing(load_massive_dwarf_DM_RC("NGC1035"))
+    @test !isnothing(load_massive_dwarf_Baryon_RC("NGC1035"))
 
     particles = generate_milkyway_baryon_particles(500)
     @test length(particles) == 500

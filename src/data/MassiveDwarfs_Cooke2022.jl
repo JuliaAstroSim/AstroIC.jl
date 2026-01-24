@@ -1,3 +1,5 @@
+using DataFrames, CSV
+
 """
 $(TYPEDSIGNATURES)
 
@@ -34,4 +36,21 @@ function load_massive_dwarf_DM_RC(galaxy::String)
     df_DM_RC.vel_e = df_DM_RC.vel_u .- df_DM_RC.vel
     df_DM_RC.vel_d = df_DM_RC.vel .- df_DM_RC.vel_e
     return df_DM_RC
+end
+
+"""
+$(TYPEDSIGNATURES)
+
+Load Baryon RC data for massive dwarfs from Cooke2022
+
+Arguments:
+- galaxy::String: Name of the dwarf galaxy
+
+Returns:
+- DataFrame with Baryon RC data including copied velocity column
+"""
+function load_massive_dwarf_Baryon_RC(galaxy::String)
+    df_Baryon_RC = DataFrame(CSV.File(joinpath(@__DIR__, "Cooke2022_RC_stellar", "$(galaxy).csv")))
+    df_Baryon_RC.vel_Stellar = deepcopy(df_Baryon_RC.vel)
+    return df_Baryon_RC
 end
