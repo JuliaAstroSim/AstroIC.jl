@@ -87,6 +87,9 @@ include("data/MilkyWay.jl")
 export load_MW_RC_Eilers2019, load_MW_RC_Mroz2019, load_MW_RC_stddev_W21, load_MW_RC_DS_W21
 export generate_milkyway_baryon_particles
 
+include("data/MassiveDwarfs_Cooke2022.jl")
+export load_massive_dwarf_CO_RC, load_massive_dwarf_DM_RC
+
 include("precompile.jl")
 
 """

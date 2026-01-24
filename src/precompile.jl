@@ -33,5 +33,8 @@
         load_MW_RC_DS_W21()
 
         generate_milkyway_baryon_particles(500)
+
+        load_massive_dwarf_CO_RC("NGC1035")
+        load_massive_dwarf_DM_RC("NGC1035")
     end
 end
