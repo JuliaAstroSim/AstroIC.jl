@@ -2,3 +2,5 @@ Manifest.toml
 docs/build
 test/output
 src/data/MW_satellites_round.csv
+*.cov
+docs/build.log

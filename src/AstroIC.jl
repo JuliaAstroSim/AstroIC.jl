@@ -42,6 +42,7 @@ export
 
     # Physics
     vmean,
+    vmean2,
 
     PlummerStarCluster,
     GasCloud,

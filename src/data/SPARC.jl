@@ -118,6 +118,17 @@ function load_SPARC_LTGs_data(;
     return df
 end
 
+"""
+    load_li2018_SPARC()
+
+Load the SPARC Radial Acceleration Relation (RAR) table from
+Li et al. (2018) `Li2018_SPARC_RAR.txt`.
+
+Returns a `DataFrame` with the per-galaxy radial-acceleration relation
+measurements (disk / bulge decompositions, distance, inclination, …).
+Several columns (`LMR_disk`, `LMR_bulge`, `D`, `Inc`) are parsed as
+`Measurement{Float64}` so that uncertainties propagate.
+"""
 function load_li2018_SPARC()
     df_li2018 = DataFrame(CSV.File(joinpath(@__DIR__, "SPARC_LTGs/Li2018_SPARC_RAR.txt"), delim="\t", ignorerepeated=true, header=2))
     df_li2018.LMR_disk = parse.(Measurements.Measurement{Float64}, df_li2018.LMR_disk)
