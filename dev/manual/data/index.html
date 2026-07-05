@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Data · AstroIC.jl</title><script async src="https://www.googletagmanager.com/gtag/js?id=UA-153693590-1"></script><script>  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'UA-153693590-1', {'page_path': location.pathname + location.search + location.hash});
+</script><script data-outdated-warner src="../../assets/warner.js"></script><link rel="canonical" href="https://juliaastrosim.github.io/AstroIC.jl/dev/manual/data/"/><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.045/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.24/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script><link href="../../assets/alpha_small.ico" rel="icon" type="image/x-icon"/></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href="../../"><img src="../../assets/logo.svg" alt="AstroIC.jl logo"/></a><div class="docs-package-name"><span class="docs-autofit"><a href="../../">AstroIC.jl</a></span></div><form class="docs-search" action="../../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../../">Home</a></li><li><span class="tocitem">Manual</span><ul><li><a class="tocitem" href="../guide/">Package Guide</a></li><li><a class="tocitem" href="../plummer/">Plummer</a></li><li><a class="tocitem" href="../disk/">Exponential Disk</a></li><li><a class="tocitem" href="../bulge/">Bulge</a></li><li><a class="tocitem" href="../spherical/">Spherical System</a></li><li><a class="tocitem" href="../gascloud/">Gas Cloud</a></li><li><a class="tocitem" href="../solarsystem/">Solar System</a></li><li><a class="tocitem" href="../tools/">Tools</a></li><li class="is-active"><a class="tocitem" href>Data</a><ul class="internal"><li><a class="tocitem" href="#Milky-Way-satellite-galaxies"><span>Milky Way satellite galaxies</span></a></li><li><a class="tocitem" href="#SPARC-rotation-curves"><span>SPARC rotation curves</span></a></li><li><a class="tocitem" href="#Milky-Way-rotation-curves"><span>Milky Way rotation curves</span></a></li><li><a class="tocitem" href="#Massive-dwarf-galaxy-rotation-curves-(Cooke-2022)"><span>Massive dwarf galaxy rotation curves (Cooke 2022)</span></a></li></ul></li></ul></li><li><span class="tocitem">Library</span><ul><li><a class="tocitem" href="../../lib/Types/">Types</a></li><li><a class="tocitem" href="../../lib/Methods/">Methods</a></li></ul></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Manual</a></li><li class="is-active"><a href>Data</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Data</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/JuliaAstroSim/AstroIC.jl/blob/master/docs/src/manual/data.md" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Data"><a class="docs-heading-anchor" href="#Data">Data</a><a id="Data-1"></a><a class="docs-heading-anchor-permalink" href="#Data" title="Permalink"></a></h1><p>AstroIC ships with CSV / DAT files from a number of observational surveys so that you can drive simulations directly from published measurements.</p><h2 id="Milky-Way-satellite-galaxies"><a class="docs-heading-anchor" href="#Milky-Way-satellite-galaxies">Milky Way satellite galaxies</a><a id="Milky-Way-satellite-galaxies-1"></a><a class="docs-heading-anchor-permalink" href="#Milky-Way-satellite-galaxies" title="Permalink"></a></h2><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; using AstroIC</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; df = load_data_MW_satellites()</code><code class="nohighlight hljs ansi" style="display:block;">61×21 DataFrame
+ Row │ Galaxy           RA         DEC        Distance   Distance_u  Distance_ ⋯
+     │ String15         Quantity…  Quantity…  Quantity…  Quantity…   Quantity… ⋯
+─────┼──────────────────────────────────────────────────────────────────────────
+   1 │ AntliaII          143.887°  -36.7673°   20.6 kpc   -0.11 kpc    0.11 kp ⋯
+   2 │ AquariusII        338.481°   -9.3274°  20.16 kpc   -0.07 kpc    0.07 kp
+   3 │ BootesI           210.023°   14.5006°  19.11 kpc   -0.08 kpc    0.08 kp
+   4 │ BootesII          209.518°   12.8525°   18.1 kpc   -0.06 kpc    0.06 kp
+   5 │ BootesIII           209.3°      26.8°  18.35 kpc    -0.1 kpc     0.1 kp ⋯
+   6 │ CanesVenaticiI    202.009°   33.5521°  21.62 kpc   -0.05 kpc    0.05 kp
+   7 │ CanesVenaticiII   194.293°   34.3226°  21.02 kpc   -0.06 kpc    0.06 kp
+   8 │ Carina            100.406°  -50.9593°  20.12 kpc   -0.12 kpc    0.12 kp
+  ⋮  │        ⋮             ⋮          ⋮          ⋮          ⋮           ⋮     ⋱
+  55 │ WLM                0.4925°  -15.4608°  24.85 kpc   -0.08 kpc    0.08 kp ⋯
+  56 │ Sg-dIrr           292.496°  -17.6808°  25.14 kpc   -0.18 kpc    0.18 kp
+  57 │ UGC4879           139.009°     52.84°  25.61 kpc   -0.13 kpc    0.13 kp
+  58 │ NGC3109           150.779°  -26.1597°  25.57 kpc   -0.08 kpc    0.08 kp
+  59 │ SextansA          152.753°  -4.69278°  25.77 kpc   -0.12 kpc    0.12 kp ⋯
+  60 │ M33               23.4621°   30.6603°   24.8 kpc   -0.05 kpc    0.05 kp
+  61 │ SextansB            150.0°   5.33222°   25.8 kpc   -0.12 kpc    0.12 kp
+                                                  16 columns and 46 rows omitted</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; size(df)</code><code class="nohighlight hljs ansi" style="display:block;">(61, 21)</code></pre><p>See <a href="../../lib/Methods/#AstroIC.load_data_MW_satellites"><code>load_data_MW_satellites</code></a>, <a href="../../lib/Methods/#AstroIC.load_data_UFDs"><code>load_data_UFDs</code></a> and <a href="../../lib/Methods/#AstroIC.generate_milkyway_baryon_particles"><code>generate_milkyway_baryon_particles</code></a> in the <a href="../../lib/Methods/#Methods">Library reference</a> for full signatures.</p><p><code>generate_milkyway_baryon_particles(Np)</code> produces a composite Milky-Way-like system of bulge + thin disc + thick disc + HI + HII gas using the published mass fractions, sampled from the corresponding <code>Bulge</code> / <code>ExponentialDisc</code> configs.</p><h2 id="SPARC-rotation-curves"><a class="docs-heading-anchor" href="#SPARC-rotation-curves">SPARC rotation curves</a><a id="SPARC-rotation-curves-1"></a><a class="docs-heading-anchor-permalink" href="#SPARC-rotation-curves" title="Permalink"></a></h2><p>The Spitzer Photometry and Accurate Rotation Curves (SPARC, <a href="https://arxiv.org/abs/1606.09251">Lelli+ 2016</a>) database covers 175 late-type galaxies.</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; using AstroIC</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; df_sparc = load_SPARC_LTGs_data()        # full galaxy parameter table</code><code class="nohighlight hljs ansi" style="display:block;">47×45 DataFrame
+ Row │ Galaxy       T      Inc      e_Inc    L        e_L      Reff     SBeff  ⋯
+     │ String15     Int64  Float64  Float64  Float64  Float64  Float64  Float6 ⋯
+─────┼──────────────────────────────────────────────────────────────────────────
+   1 │ DDO064          10     60.0      5.0    0.157    0.007     1.2     17.4 ⋯
+   2 │ DDO161          10     70.0     10.0    0.548    0.015     2.04    20.7
+   3 │ DDO168          10     63.0      6.0    0.191    0.005     1.29    18.2
+   4 │ ESO116-G012      7     74.0      3.0    4.292    0.071     2.75    90.5
+   5 │ F568-V1          7     40.0     10.0    3.825    0.384     4.4     31.3 ⋯
+   6 │ F571-V1          7     30.0     10.0    1.849    0.267     4.38    15.3
+   7 │ F574-1           7     65.0     10.0    6.537    0.596     5.87    29.9
+   8 │ NGC0024          5     64.0      3.0    3.889    0.036     2.01   151.6
+  ⋮  │      ⋮         ⋮       ⋮        ⋮        ⋮        ⋮        ⋮        ⋮   ⋱
+  41 │ UGC07524         9     46.0      3.0    2.436    0.025     3.61    29.7 ⋯
+  42 │ UGC07603         7     78.0      3.0    0.376    0.008     0.85    81.8
+  43 │ UGC07690        10     41.0      5.0    0.858    0.018     0.86   184.0
+  44 │ UGC08490         9     50.0      3.0    1.017    0.012     1.14   124.9
+  45 │ UGC09037         6     65.0      5.0   68.614    1.769     5.69   334.8 ⋯
+  46 │ UGC10310         9     34.0      6.0    1.741    0.053     3.12    28.3
+  47 │ UGCA442          9     64.0      7.0    0.14     0.005     1.71     7.6
+                                                  38 columns and 32 rows omitted</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; df_rc    = load_SPARC_LTGs_RC()          # mass-model rotation curves</code><code class="nohighlight hljs ansi" style="display:block;">3391×10 DataFrame
+  Row │ Galaxy    D        R        Vobs     e_Vobs   Vgas     Vdisk    Vbul   ⋯
+      │ String15  Float64  Float64  Float64  Float64  Float64  Float64  Float6 ⋯
+──────┼─────────────────────────────────────────────────────────────────────────
+    1 │ CamB         3.36     0.16     1.99     1.5      1.86     3.75      0. ⋯
+    2 │ CamB         3.36     0.41     4.84     1.5      4.24     9.47      0.
+    3 │ CamB         3.36     0.57     6.79     1.5      5.61    11.76      0.
+    4 │ CamB         3.36     0.73     8.87     1.5      6.77    13.72      0.
+    5 │ CamB         3.36     0.9     10.9      1.5      7.77    14.8       0. ⋯
+    6 │ CamB         3.36     1.06    12.9      1.5      8.44    15.24      0.
+    7 │ CamB         3.36     1.22    14.7      1.5      8.64    15.11      0.
+    8 │ CamB         3.36     1.47    16.8      1.5      8.08    15.9       0.
+  ⋮   │    ⋮         ⋮        ⋮        ⋮        ⋮        ⋮        ⋮        ⋮   ⋱
+ 3385 │ UGCA444      0.98     2.19    33.8      4.67    15.64     5.35      0. ⋯
+ 3386 │ UGCA444      0.98     2.26    34.9      3.74    15.64     5.36      0.
+ 3387 │ UGCA444      0.98     2.33    36.1      5.47    15.64     5.39      0.
+ 3388 │ UGCA444      0.98     2.4     37.2      5.39    15.24     5.42      0.
+ 3389 │ UGCA444      0.98     2.48    37.6      7.1     14.73     5.5       0. ⋯
+ 3390 │ UGCA444      0.98     2.55    35.6      4.73    14.22     5.46      0.
+ 3391 │ UGCA444      0.98     2.62    38.3      7.78    13.81     5.25      0.
+                                                 3 columns and 3376 rows omitted</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; df_li18  = load_li2018_SPARC()           # Radial Acceleration Relation</code><code class="nohighlight hljs ansi" style="display:block;">175×10 DataFrame
+ Row │ ID     Galaxy       log_L    LMR_disk   LMR_bulge  D            D_D0    ⋯
+     │ Int64  String15     Float64  Measurem…  Measurem…  Measurem…    Float64 ⋯
+─────┼──────────────────────────────────────────────────────────────────────────
+   1 │     1  UGC02487       11.69  1.83±0.2   0.91±0.18   63.7±9.4       0.92 ⋯
+   2 │     2  UGC02885       11.61  0.45±0.06  0.97±0.08   82.7±5.5       1.03
+   3 │     3  NGC6195        11.59  0.32±0.06  0.85±0.07  115.0±11.0      0.9
+   4 │     4  UGC11455       11.57  0.38±0.04  0.0±0.0     84.7±5.4       1.08
+   5 │     5  NGC5371        11.53  3.3±0.29   0.0±0.0      7.44±0.68     0.19 ⋯
+   6 │     6  NGC2955        11.5   0.37±0.06  0.84±0.08   95.3±8.9       0.97
+   7 │     7  NGC0801        11.49  1.33±0.12  0.0±0.0     33.0±2.0       0.41
+   8 │     8  ESO563-G021    11.49  0.43±0.04  0.0±0.0     88.0±4.9       1.45
+  ⋮  │   ⋮         ⋮          ⋮         ⋮          ⋮           ⋮          ⋮    ⋱
+ 169 │   169  ESO444-G084     7.85  0.42±0.09  0.0±0.0      5.08±0.43     1.05 ⋯
+ 170 │   170  DDO154          7.72  0.19±0.03  0.0±0.0      3.87±0.16     0.96
+ 171 │   171  UGC07577        7.65  0.24±0.05  0.0±0.0      2.14±0.14     0.83
+ 172 │   172  D564-8          7.52  0.4±0.09   0.0±0.0      8.69±0.28     0.99
+ 173 │   173  NGC3741         7.45  0.31±0.05  0.0±0.0      3.35±0.12     1.04 ⋯
+ 174 │   174  UGC04483        7.11  0.43±0.1   0.0±0.0      2.55±0.22     0.76
+ 175 │   175  UGCA444         7.08  0.49±0.12  0.0±0.0      0.84±0.04     0.86
+                                                  3 columns and 160 rows omitted</code></pre><p>For early-type galaxies (Lelli+ 2017):</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; using AstroIC</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; df_xray = load_SPARC_Xray_ETGs_data()</code><code class="nohighlight hljs ansi" style="display:block;">8×17 DataFrame
+ Row │ Galaxy   T        D        errD     L        errL     Reff     SBeff    ⋯
+     │ String7  String3  Float64  Float64  Float64  Float64  Float64  Float64  ⋯
+─────┼──────────────────────────────────────────────────────────────────────────
+   1 │ NGC720   E5          26.1      0.0    234.5      0.1      4.5   1857.1  ⋯
+   2 │ NGC1407  E0          28.2      0.0    540.1      0.1      7.8   1408.7
+   3 │ NGC1521  E3          69.5      0.0    532.6      0.1     10.1    825.7
+   4 │ NGC4125  E6          24.0      0.0    303.1      0.1      5.7   1448.2
+   5 │ NGC4261  E2          32.4      0.0    345.4      0.1      4.5   2635.3  ⋯
+   6 │ NGC4472  E2          16.1      0.0    447.6      0.1      5.2   2587.2
+   7 │ NGC4649  E2          17.4      0.0    345.7      0.1      3.6   4293.7
+   8 │ NGC6482  E:          57.9      0.0    427.9      3.9      4.4   3410.6
+                                                               9 columns omitted</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; df_etg  = load_SPARC_rotating_ETGs_data()</code><code class="nohighlight hljs ansi" style="display:block;">16×29 DataFrame
+ Row │ Galaxy   Dist     errD     M      Inc      erI      L        effL     R ⋯
+     │ String7  Float64  Float64  Int64  Float64  Float64  Float64  Float64  F ⋯
+─────┼──────────────────────────────────────────────────────────────────────────
+   1 │ NGC2685     16.1      4.8      1     65.0      4.0   30.037    0.277    ⋯
+   2 │ NGC2824     39.6      9.9      1     65.0      8.0   39.572    0.729
+   3 │ NGC2859     26.2      6.5      1     35.0      5.0   89.085    0.82
+   4 │ NGC2974     22.1      2.8      2     60.0      2.0  116.946    1.077
+   5 │ NGC3522     25.2      3.2      2     41.0      2.0   13.183    0.243    ⋯
+   6 │ NGC3626     22.9      2.5      2     54.0      1.0   74.623    0.687
+   7 │ NGC3838     23.1      5.8      1     66.0      8.0   22.492    0.207
+   8 │ NGC3941     12.4      1.6      2     57.0      1.0   43.656    0.402
+   9 │ NGC3945     22.8      5.7      1     57.0      5.0  126.319    1.163    ⋯
+  10 │ NGC3998     14.2      1.8      2     66.0      2.0   56.205    0.518
+  11 │ NGC4203     15.3      2.0      2     30.0      3.0   61.685    0.568
+  12 │ NGC4262     16.6      1.8      2     67.0      8.0   28.988    0.267
+  13 │ NGC4278     15.4      2.0      2     45.0      5.0   82.612    0.0      ⋯
+  14 │ NGC5582     28.1      3.6      2     50.0      2.0   55.235    0.509
+  15 │ NGC6798     37.3      9.3      1     52.0      2.0   69.09     0.636
+  16 │ UGC6176     39.3      9.8      1     47.0      6.0   28.972    0.534
+                                                              21 columns omitted</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; # Per-galaxy rotation curves (bulge / disk decomposition)
+       rc_bulge = load_SPARC_rotating_ETGs_RC(&quot;NGC2685&quot;, :bulge)</code><code class="nohighlight hljs ansi" style="display:block;">69×3 DataFrame
+ Row │ r         Σ        vc
+     │ Float64   Float64  Float64
+─────┼─────────────────────────────
+   1 │  0.0      29637.1    0.0
+   2 │  0.05074  29637.1   56.7731
+   3 │  0.0562   29119.0   64.501
+   4 │  0.06166  28546.9   71.7029
+   5 │  0.06791  27836.0   79.2344
+   6 │  0.07493  27114.7   87.5074
+   7 │  0.08196  26034.6   95.3153
+   8 │  0.09054  25166.3  103.639
+  ⋮  │    ⋮         ⋮        ⋮
+  63 │ 16.927        0.0   49.0152
+  64 │ 18.3375       0.0   47.0924
+  65 │ 19.7479       0.0   45.3795
+  66 │ 21.1584       0.0   43.8409
+  67 │ 22.5688       0.0   42.4489
+  68 │ 23.9793       0.0   41.1816
+  69 │ 25.3897       0.0   40.0214
+                    54 rows omitted</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; rc_disk  = load_SPARC_rotating_ETGs_RC(&quot;NGC2824&quot;, :disk)</code><code class="nohighlight hljs ansi" style="display:block;">51×3 DataFrame
+ Row │ r         Σ           vc
+     │ Float64   Float64     Float64
+─────┼────────────────────────────────
+   1 │  0.0      6238.99       0.0
+   2 │  0.12479  5309.66      33.5176
+   3 │  0.13823  5218.23      36.7876
+   4 │  0.15167  5128.37      39.9969
+   5 │  0.16703  5027.57      43.604
+   6 │  0.18431  4916.54      47.5819
+   7 │  0.20159  4807.95      51.4458
+   8 │  0.2227   4678.49      56.028
+  ⋮  │    ⋮          ⋮          ⋮
+  45 │  7.55082    15.5137   131.946
+  46 │  8.30532    11.7683   126.862
+  47 │  9.13662    10.5175   121.862
+  48 │ 10.0505      8.11174  117.786
+  49 │ 11.0546      6.36669  113.63
+  50 │ 12.1604      4.49484  109.724
+  51 │ 13.3776      4.44134  107.707
+                       36 rows omitted</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; rotmod   = load_SPARC_rotating_ETGs_rotmod(&quot;NGC2685&quot;)</code><code class="nohighlight hljs ansi" style="display:block;">2×6 DataFrame
+ Row │ r        Vobs     errV     Vgas     Vdisk    Vbul
+     │ Float64  Float64  Float64  Float64  Float64  Float64
+─────┼──────────────────────────────────────────────────────
+   1 │    0.31    163.0     16.3      0.0    44.06   203.43
+   2 │   24.98    144.0     10.0      0.0    61.15    40.36</code></pre><p>See <a href="../../lib/Methods/#AstroIC.load_SPARC_LTGs_RC"><code>load_SPARC_LTGs_RC</code></a>, <a href="../../lib/Methods/#AstroIC.load_SPARC_LTGs_data"><code>load_SPARC_LTGs_data</code></a>, <a href="../../lib/Methods/#AstroIC.load_li2018_SPARC"><code>load_li2018_SPARC</code></a>, <a href="../../lib/Methods/#AstroIC.load_SPARC_Xray_ETGs_data"><code>load_SPARC_Xray_ETGs_data</code></a>, <a href="../../lib/Methods/#AstroIC.load_SPARC_rotating_ETGs_data"><code>load_SPARC_rotating_ETGs_data</code></a>, <a href="../../lib/Methods/#AstroIC.load_SPARC_rotating_ETGs_RC"><code>load_SPARC_rotating_ETGs_RC</code></a> and <a href="../../lib/Methods/#AstroIC.load_SPARC_rotating_ETGs_rotmod"><code>load_SPARC_rotating_ETGs_rotmod</code></a> in the <a href="../../lib/Methods/#Methods">Library reference</a> for full signatures.</p><h2 id="Milky-Way-rotation-curves"><a class="docs-heading-anchor" href="#Milky-Way-rotation-curves">Milky Way rotation curves</a><a id="Milky-Way-rotation-curves-1"></a><a class="docs-heading-anchor-permalink" href="#Milky-Way-rotation-curves" title="Permalink"></a></h2><p>Three independent measurements of the Milky Way rotation curve are bundled:</p><table><tr><th style="text-align: right">Function</th><th style="text-align: right">Reference</th></tr><tr><td style="text-align: right"><code>load_MW_RC_Eilers2019</code></td><td style="text-align: right">Eilers+ (2019), <a href="https://iopscience.iop.org/article/10.3847/1538-4357/aaf648">ApJ 871, 120</a></td></tr><tr><td style="text-align: right"><code>load_MW_RC_Mroz2019</code></td><td style="text-align: right">Mróz+ (2019), <a href="https://iopscience.iop.org/article/10.3847/2041-8213/aaf73f">ApJ 870, L10</a></td></tr><tr><td style="text-align: right"><code>load_MW_RC_DS_W21</code></td><td style="text-align: right">Wang+ (2021), comparing CDM / QUMOND / MOG fits</td></tr><tr><td style="text-align: right"><code>load_MW_RC_stddev_W21</code></td><td style="text-align: right">Wang+ (2021) standard-deviation table</td></tr></table><pre><code class="language-julia hljs">using AstroIC
+df_eilers = load_MW_RC_Eilers2019()
+df_mroz   = load_MW_RC_Mroz2019()
+df_w21    = load_MW_RC_DS_W21()
+df_w21σ   = load_MW_RC_stddev_W21()</code></pre><p>See <a href="../../lib/Methods/#AstroIC.load_MW_RC_Eilers2019"><code>load_MW_RC_Eilers2019</code></a>, <a href="../../lib/Methods/#AstroIC.load_MW_RC_Mroz2019"><code>load_MW_RC_Mroz2019</code></a>, <a href="../../lib/Methods/#AstroIC.load_MW_RC_stddev_W21"><code>load_MW_RC_stddev_W21</code></a> and <a href="../../lib/Methods/#AstroIC.load_MW_RC_DS_W21"><code>load_MW_RC_DS_W21</code></a> in the <a href="../../lib/Methods/#Methods">Library reference</a> for full signatures.</p><h2 id="Massive-dwarf-galaxy-rotation-curves-(Cooke-2022)"><a class="docs-heading-anchor" href="#Massive-dwarf-galaxy-rotation-curves-(Cooke-2022)">Massive dwarf galaxy rotation curves (Cooke 2022)</a><a id="Massive-dwarf-galaxy-rotation-curves-(Cooke-2022)-1"></a><a class="docs-heading-anchor-permalink" href="#Massive-dwarf-galaxy-rotation-curves-(Cooke-2022)" title="Permalink"></a></h2><p>Six massive dwarf rotation-curve decompositions are bundled (<a href="https://arxiv.org/abs/2203.00694">Cooke 2022, MNRAS 512, 1012</a>):</p><pre><code class="language-julia hljs">using AstroIC
+co  = load_massive_dwarf_CO_RC(&quot;NGC1035&quot;)        # CO gas contribution
+dm  = load_massive_dwarf_DM_RC(&quot;NGC1035&quot;)        # dark matter
+baryon = load_massive_dwarf_Baryon_RC(&quot;NGC1035&quot;) # total baryonic</code></pre><p>See <a href="../../lib/Methods/#AstroIC.load_massive_dwarf_CO_RC"><code>load_massive_dwarf_CO_RC</code></a>, <a href="../../lib/Methods/#AstroIC.load_massive_dwarf_DM_RC"><code>load_massive_dwarf_DM_RC</code></a> and <a href="../../lib/Methods/#AstroIC.load_massive_dwarf_Baryon_RC"><code>load_massive_dwarf_Baryon_RC</code></a> in the <a href="../../lib/Methods/#Methods">Library reference</a> for full signatures.</p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../tools/">« Tools</a><a class="docs-footer-nextpage" href="../../lib/Types/">Types »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.25 on <span class="colophon-date" title="Sunday 5 July 2026 08:21">Sunday 5 July 2026</span>. Using Julia version 1.12.6.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
