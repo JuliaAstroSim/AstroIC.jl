@@ -76,5 +76,11 @@ makedocs(
     #doctest = ("doctest=only" in ARGS) ? :only : true,
 )
 
-# Deployment is performed by the `julia-actions/julia-docdeploy` GitHub Action,
-# not by `deploydocs` here. See `.github/workflows/ManuallyBuildDoc.yml`.
+deploydocs(
+    repo = "github.com/JuliaAstroSim/AstroIC.jl.git",
+    target = "build",
+    # `julia-actions/julia-docdeploy@v1` automatically detects GitHub Actions
+    # and uses `GITHUB_TOKEN` (no SSH key required). See
+    # `.github/workflows/ManuallyBuildDoc.yml`.
+    devbranch = "master",
+)
