@@ -1,24 +1,31 @@
 name: ManuallyBuildDoc
 
-on: 
+on:
   [workflow_dispatch]
 
-# 64-bit Julia only
+# GITHUB_TOKEN needs `contents: write` to push the built docs back to the
+# `gh-pages` branch via `julia-actions/julia-docdeploy`.
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
-      - uses: julia-actions/setup-julia@latest
+      - uses: actions/checkout@v4
+      - uses: julia-actions/setup-julia@v2
         with:
-          version: '1.12.4'
-      - run: julia --project=docs -e '
-          using Pkg;
-          Pkg.add("Documenter");
-          Pkg.develop(PackageSpec(; path=pwd()));
-          Pkg.instantiate();'
-      - name: Build and deploy doc
-        env:
-          #GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Deploying to else where, so use SSH instead
-          DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
+          version: '1.12'
+      - name: Install dependencies
+        run: julia --project=docs -e '
+            using Pkg;
+            Pkg.develop(PackageSpec(; path=pwd()));
+            Pkg.instantiate();'
+      - name: Build documentation
+        # `make.jl` only calls `makedocs`; deployment is performed by the next step.
         run: julia --project=docs --color=yes docs/make.jl
+      - name: Deploy documentation
+        uses: julia-actions/julia-docdeploy@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DOCUMENTER_VERSION: 0.27.25
