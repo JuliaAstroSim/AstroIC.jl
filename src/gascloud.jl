@@ -127,7 +127,7 @@ function generate(config::GasCloud, units = uAstro;
 
         if r2 <= R^2
             mass = config.rho0 * R^2 / r2 * Lx * Ly * Lz
-            @inbounds push!(data, setproperties!!(SPHGas(units; id), Pos = pos[i], Vel = vel[i], Mass = mass))
+            @inbounds push!(data, setproperties!!(Star(units; id), Pos = pos[i], Vel = vel[i], Mass = mass))
             id += 1
         end
     end

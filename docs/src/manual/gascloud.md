@@ -8,7 +8,7 @@ temperature `T`.
 
 ```@repl gascloud
 using AstroIC
-using PhysicalParticles, UnitfulAstro, PhysicalConstants
+using Unitful, UnitfulAstro, PhysicalConstants
 
 config = GasCloud(
     collection   = GAS,
