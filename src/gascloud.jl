@@ -110,23 +110,39 @@ function generate(config::GasCloud, units = uAstro;
     Ly = 2.0 * R / (Ny - 1)
     Lz = 2.0 * R / (Nz - 1)
 
+    # Resolve target units up-front so we can convert Pos/Vel/Mass into them.
+    uLength = getuLength(units)
+    uMass   = getuMass(units)
+
+    # Build the Cartesian grid in R's unit (e.g. kpc) — that's the natural
+    # unit for the radius/sphere cut, and keeps the mass formula below
+    # dimensionally clean (`rho0 * R² / r² * LxLyLz` all in matching units).
     x, y, z = gridpoints(config.Radius, config.Nx, config.Ny, config.Nz)
-    pos = PVector.(x, y, z)
+    pos_native = PVector.(x, y, z)
+
+    # Convert positions into the target length unit before stuffing into
+    # `Star(units)` so the field type matches.
+    pos = [PVector(uconvert(uLength, p.x), uconvert(uLength, p.y),
+                   uconvert(uLength, p.z)) for p in pos_native]
 
     v = vmean(config.T, config.ParticleMass, units)
     vrand = randn_pvector(Nx * Ny * Nz)
     vel = normalize.(vrand) * v
-    
+
     data = empty([Star(units)])
     id = 1
     for i in 1:length(x)
-        @inbounds r2 = pos[i] * pos[i]
+        @inbounds r2 = pos_native[i] * pos_native[i]
         if iszero(r2)
-            @inbounds r2 = pos[i+1] * pos[i+1]
+            @inbounds r2 = pos_native[i+1] * pos_native[i+1]
         end
 
         if r2 <= R^2
+            # `mass` lives in whatever unit config.rho0 comes in (default
+            # `Msun/kpc^3` × kpc³ = `Msun`); convert to the target mass unit
+            # so `Star(units; id)::Mass{FreeUnits{kg}}` accepts it.
             mass = config.rho0 * R^2 / r2 * Lx * Ly * Lz
+            mass = uconvert(uMass, mass)
             @inbounds push!(data, setproperties!!(Star(units; id), Pos = pos[i], Vel = vel[i], Mass = mass))
             id += 1
         end

@@ -55,6 +55,18 @@ export
     helio2xyz,
     gridpoints,
 
+    # Extended Solar System (Planets.jl + planets_extended.jl)
+    # PLANET_TABLE, planet_info, planet_names, planet_color, planet_horizons_id
+    PLANET_TABLE,
+    planet_info,
+    planet_names,
+    planet_color,
+    planet_horizons_id,
+    # solar_system_full, moon, horizons_state_vector
+    solar_system_full,
+    moon,
+    horizons_state_vector,
+
     generate
 
 abstract type InitialConditionConfig end
@@ -74,6 +86,8 @@ include("bulge.jl")
 include("spherical.jl")
 include("gascloud.jl")
 include("solarsystem.jl")
+include("data/Planets.jl")
+include("planets_extended.jl")
 
 include("data/MW_satellites.jl")
 export load_data_MW_satellites

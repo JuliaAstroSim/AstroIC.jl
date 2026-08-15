@@ -19,6 +19,7 @@ include("bulge.jl")
 include("gascloud.jl")
 include("spherical.jl")
 include("solarsystem.jl")
+include("planets_extended.jl")
 
 @testset "Load data" begin
     df = load_data_MW_satellites()
