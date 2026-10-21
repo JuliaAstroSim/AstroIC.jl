@@ -16,6 +16,9 @@ generate(::Bulge)
 generate(::GasCloud)
 generate(::SphericalSystem)
 solarsystem
+solar_system_full
+moon
+horizons_state_vector
 ```
 
 ## Particle-system manipulation

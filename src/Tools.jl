@@ -61,8 +61,8 @@ end
 $(TYPEDSIGNATURES)
 Generate `PVector2D` from radius
 """
-function rand_pos_2d(r::Number)
-    gamma = rand()
+function rand_pos_2d(r::Number; rng::AbstractRNG = Random.default_rng())
+    gamma = rand(rng)
 
     x = r * cos(2.0pi*gamma)
     y = r * sin(2.0pi*gamma)
@@ -73,8 +73,8 @@ end
 $(TYPEDSIGNATURES)
 Generate `PVector` from radius
 """
-function rand_pos_3d(r::Number)
-    eta, gamma = rand(2)
+function rand_pos_3d(r::Number; rng::AbstractRNG = Random.default_rng())
+    eta, gamma = rand(rng, 2)
 
     x = r * sin(acos(2.0eta-1.0)) * cos(2.0pi*gamma)
     y = r * sin(acos(2.0eta-1.0)) * sin(2.0pi*gamma)
@@ -87,12 +87,13 @@ $(TYPEDSIGNATURES)
 Rotate along the positive z-axis.
 - `ratio`: rotational motion v.s. random motion. If equals `1`, only rotational component
 """
-function rotational_velocity_acc(x, y, z, a, rot_ratio = 1.0)
+function rotational_velocity_acc(x, y, z, a, rot_ratio = 1.0;
+                                 rng::AbstractRNG = Random.default_rng())
     u = unit(x)
     r = sqrt(x^2 + y^2 + z^2)
     v = sqrt(a * r)
     v_vec_rot = -normalize(PVector(ustrip(u,x), ustrip(u,y), 0.0) × PVector(0.0, 0.0, 1.0)) * v
-    v_vec = rot_ratio * v_vec_rot + (1-rot_ratio) * normalize(randn(PVector{Float64})) * v 
+    v_vec = rot_ratio * v_vec_rot + (1-rot_ratio) * normalize(randn(rng, PVector{Float64})) * v
     # v_vec = v_vec_rot + (1-rot_ratio) * randn(PVector{Float64}) * v # this will change the average velocity
 end
 
@@ -101,13 +102,23 @@ $(TYPEDSIGNATURES)
 Rotate along the positive z-axis.
 - `rot_ratio`: rotational motion v.s. random motion. If equals `1`, only rotational component
 """
-function rotational_velocity(x, y, v, rot_ratio = 1.0)
+function rotational_velocity(x, y, v, rot_ratio = 1.0;
+                             rng::AbstractRNG = Random.default_rng())
     u = unit(x)
     v_vec_rot = -normalize(PVector(ustrip(u,x), ustrip(u,y), 0.0) × PVector(0.0, 0.0, 1.0)) * v
-    v_vec = rot_ratio * v_vec_rot + (1-rot_ratio) * normalize(randn(PVector{Float64})) * v 
+    v_vec = rot_ratio * v_vec_rot + (1-rot_ratio) * normalize(randn(rng, PVector{Float64})) * v
     # v_vec = v_vec_rot + (1-rot_ratio) * randn(PVector{Float64}) * v # this will change the average velocity
 end
 
+
+"""
+$(TYPEDSIGNATURES)
+
+Evaluate a velocity-dispersion specification, which may be a constant or a
+function of radius.
+"""
+_velocity_dispersion(σ::Number, r) = σ
+_velocity_dispersion(f::Function, r) = f(r)
 
 """
 $(TYPEDSIGNATURES)

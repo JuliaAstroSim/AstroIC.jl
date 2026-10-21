@@ -114,7 +114,7 @@ rotational velocities instead of zero.
 config = Bulge(
     collection  = STAR,
     NumSamples  = 5_000,
-    TotalMass   = 8.57u"Msun",
+    TotalMass   = 8.57e9u"Msun",
     ScaleRadius = 0.075u"kpc",
     CutRadius   = 2.1u"kpc",
     q           = 0.5,
@@ -162,6 +162,24 @@ using Dates
 using AstroIC
 
 particles = solarsystem(now())  # SI units; returns 8 planets + the Sun
+```
+
+An extended version adds Pluto, the Moon, the Galilean moons and Titan via
+JPL Horizons (network access required):
+
+```julia
+bodies = solar_system_full(DateTime(2026, 7, 25))  # 16 bodies
+m = moon(DateTime(2026, 7, 25); body = "Europa")
+```
+
+### Rotation and velocity dispersion
+
+Discs, bulges and spherical systems accept optional velocity keywords:
+
+```julia
+rc = (radii, velocities)  # (length, velocity) arrays
+particles = generate(config; RotationCurve = rc)
+particles = generate(config; VelocityDispersion = 100.0u"km/s")
 ```
 
 ### Setting system center & velocity

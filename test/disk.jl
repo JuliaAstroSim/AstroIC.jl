@@ -15,6 +15,18 @@
     @test length(data) == 100
 end
 
+@testset "Disk: invalid sampling bounds" begin
+    config = ExponentialDisc(; NumSamples = 10)
+    @test_throws ErrorException generate(config; MaxRadius = 0.0u"kpc")
+    @test_throws ErrorException generate(config; MaxHeight = 0.0u"kpc")
+end
+
+@testset "Disk: collection propagation" begin
+    config = ExponentialDisc(; NumSamples = 10, collection = GAS)
+    particles = generate(config)
+    @test all(==(GAS), particles.Collection)
+end
+
 @testset "Disk: Base.show" begin
     config = ExponentialDisc(; NumSamples = 10)
     io = IOBuffer()
@@ -34,6 +46,45 @@ end
 
     # MaxHeight < ScaleHeight → warn.
     @test_logs (:warn, r"MaxHeight.*smaller than.*ScaleHeight") match_mode = :any generate(config; MaxRadius = 50.0u"kpc", MaxHeight = 0.05u"kpc")
+end
+
+using Random: seed!
+
+@testset "Disk: unit consistency" begin
+    config = ExponentialDisc(;
+        NumSamples   = 30,
+        ScaleRadius  = 2.0u"kpc",
+        ScaleHeight  = 0.02u"kpc",
+    )
+
+    seed!(42)
+    p_astro = generate(config; MaxRadius = 6.0u"kpc")
+    seed!(42)
+    p_si = generate(config, uSI; MaxRadius = 6.0u"kpc")
+
+    # The same config must describe the same physical system in either unit
+    # system, and the sampled radii must respect MaxRadius/MaxHeight.
+    for (a, b) in zip(p_astro, p_si)
+        R_astro = sqrt(a.Pos.x^2 + a.Pos.y^2)
+        R_si = sqrt(b.Pos.x^2 + b.Pos.y^2)
+        @test ustrip(u"kpc", R_astro) ≈ ustrip(u"kpc", R_si)
+        @test ustrip(u"kpc", a.Pos.z) ≈ ustrip(u"kpc", b.Pos.z)
+        @test ustrip(u"kpc", R_astro) <= 6.0 + 1e-9
+        @test abs(ustrip(u"kpc", a.Pos.z)) <= 6.0 + 1e-9
+    end
+
+    # Length arguments may be given in a different unit than the output unit.
+    config_pc = ExponentialDisc(;
+        NumSamples   = 30,
+        ScaleRadius  = 2000.0u"pc",
+        ScaleHeight  = 20.0u"pc",
+    )
+    p_pc = generate(config_pc)
+    @test all(
+        q -> sqrt(q.Pos.x^2 + q.Pos.y^2) <= 10000.0u"pc" + 1e-6u"pc",
+        p_pc,
+    )
+    @test all(q -> abs(q.Pos.z) <= 10000.0u"pc" + 1e-6u"pc", p_pc)
 end
 
 @testset "Disk: with RotationCurve" begin

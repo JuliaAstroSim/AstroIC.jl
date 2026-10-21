@@ -18,8 +18,10 @@ GasCloud
 
 - `collection`    particle type
 - `Radius`        Radius of cloud
-- `rho0`          Central Density
+- `rho0`          Density at `Radius` (the profile scales as `R²/r²`)
 - `T`             Gas Temperature
+- `ParticleMass`  Mean particle mass used for the thermal velocity; this is
+                  **not** the SPH cell mass stored in each particle's `Mass`
 - `Nx, Ny, Nz`    Grid Resolution
 """
 function GasCloud(;
@@ -101,7 +103,8 @@ Generate gas cloud sampled from a Cartesian grid
 $_common_keywords
 """
 function generate(config::GasCloud, units = uAstro;
-                  constants::Constant = Constant(units))
+                  constants::Constant = Constant(units),
+                  rng::AbstractRNG = Random.default_rng())
     R = config.Radius
     Nx = config.Nx
     Ny = config.Ny
@@ -125,11 +128,14 @@ function generate(config::GasCloud, units = uAstro;
     pos = [PVector(uconvert(uLength, p.x), uconvert(uLength, p.y),
                    uconvert(uLength, p.z)) for p in pos_native]
 
-    v = vmean(config.T, config.ParticleMass, units)
-    vrand = randn_pvector(Nx * Ny * Nz)
-    vel = normalize.(vrand) * v
+    # Draw each velocity component from N(0, σ²). For a 3D Maxwellian the
+    # mean speed is sqrt(8/π) σ, so σ = vmean * sqrt(π/8).
+    v = vmean(config.T, config.ParticleMass, units; constants = constants)
+    σ = v * sqrt(π / 8)
+    vrand = [randn(rng, PVector{Float64}) for _ in 1:(Nx * Ny * Nz)]
+    vel = vrand .* σ
 
-    data = empty([Star(units)])
+    data = empty([Star(units; collection = config.collection)])
     id = 1
     for i in 1:length(x)
         @inbounds r2 = pos_native[i] * pos_native[i]
@@ -143,7 +149,7 @@ function generate(config::GasCloud, units = uAstro;
             # so `Star(units; id)::Mass{FreeUnits{kg}}` accepts it.
             mass = config.rho0 * R^2 / r2 * Lx * Ly * Lz
             mass = uconvert(uMass, mass)
-            @inbounds push!(data, setproperties!!(Star(units; id), Pos = pos[i], Vel = vel[i], Mass = mass))
+            @inbounds push!(data, setproperties!!(Star(units; id, collection = config.collection), Pos = pos[i], Vel = vel[i], Mass = mass))
             id += 1
         end
     end

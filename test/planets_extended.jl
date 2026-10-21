@@ -166,6 +166,25 @@ end
 end
 
 # ---------------------------------------------------------------------------
+# Offline tests for the Horizons parsing / validation paths
+# ---------------------------------------------------------------------------
+
+@testset "Horizons parser (offline)" begin
+    txt = "header\n\$\$SOE\n" *
+          " 2460580.500000000 = A.D. 2026-Jul-25 00:00:00.0000  TDB\n" *
+          " X = 1.0E+05 Y = 2.0E+05 Z = 3.0E+05\n" *
+          " VX= 4.0E+00 VY= 5.0E+00 VZ= 6.0E+00\n" *
+          "\$\$EOE\nfooter"
+    sv = AstroIC._parse_horizons_state_vector(txt, "301", DateTime(2026, 7, 25))
+    @test sv == (1.0e5, 2.0e5, 3.0e5, 4.0, 5.0, 6.0)
+end
+
+@testset "moon: invalid body / parent fail before network" begin
+    @test_throws ArgumentError moon(DateTime(2025, 1, 1); body = "NotABody")
+    @test_throws ArgumentError moon(DateTime(2025, 1, 1); parent = "NotAParent")
+end
+
+# ---------------------------------------------------------------------------
 # Network-dependent tests: gated behind ASTROIC_NET_TEST=1
 # ---------------------------------------------------------------------------
 
@@ -173,15 +192,11 @@ const _NET_TEST = get(ENV, "ASTROIC_NET_TEST", "0") == "1"
 
 if _NET_TEST
     @testset "horizons_state_vector (network)" begin
-        # Sun heliocentric position at J2000 is at the SSB (within ~R_sun).
+        # The Sun relative to its own body center is at rest at the origin.
         sv = horizons_state_vector("10", DateTime(2000, 1, 1, 12, 0);
                                    center = "500@10")
         @test length(sv) == 6
-        x, y, z, vx, vy, vz = sv
-        # Position in km: |r| of the Sun w.r.t. the SSB is ≲ a few × 10^5 km.
-        @test sqrt(x^2 + y^2 + z^2) < 1.0e6
-        # Velocity in km/s: barycentric velocity of the Sun is ≲ 0.015 km/s.
-        @test sqrt(vx^2 + vy^2 + vz^2) < 0.05
+        @test all(x -> abs(x) < 1e-6, sv)
 
         # Earth heliocentric distance at J2000 should be ~1 AU = 1.496e8 km.
         sv = horizons_state_vector("399", DateTime(2000, 1, 1, 12, 0);
@@ -237,10 +252,14 @@ if _NET_TEST
         @test length(b_minimal) == 9
     end
 
-    @testset "moon: unknown parent (network)" begin
-        # Unknown parent raises before any network call.
-        @test_throws ErrorException moon(DateTime(2025, 1, 1);
-                                        body = "Moon", parent = "Pluto")
+    @testset "moon: explicit parent (network)" begin
+        # Explicitly requesting Pluto as the center is a valid Horizons
+        # query; just make sure the returned vector has finite components.
+        m = moon(DateTime(2025, 1, 1); body = "Moon", parent = "Pluto")
+        @test m isa Star
+        @test all(isfinite, (ustrip(u"m", m.Pos.x),
+                             ustrip(u"m", m.Pos.y),
+                             ustrip(u"m", m.Pos.z)))
     end
 else
     @testset "Network tests skipped (set ASTROIC_NET_TEST=1 to enable)" begin

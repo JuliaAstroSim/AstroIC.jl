@@ -21,10 +21,12 @@
 using Dates
 
 # ---------------------------------------------------------------------------
-# In-memory cache (per-process). Keyed by (body_horizons_id, hour_utc).
+# In-memory cache (per-process). Keyed by (body, center, step, exact epoch).
+# Including center/step is essential: the same body has different state
+# vectors in different reference frames.
 # ---------------------------------------------------------------------------
 
-const _HORIZONS_CACHE = Dict{Tuple{String,DateTime}, NTuple{6,Float64}}()
+const _HORIZONS_CACHE = Dict{Tuple{String,String,String,DateTime}, NTuple{6,Float64}}()
 
 # ---------------------------------------------------------------------------
 # Low-level: query JPL Horizons REST API
@@ -35,22 +37,23 @@ const _HORIZONS_CACHE = Dict{Tuple{String,DateTime}, NTuple{6,Float64}}()
                           center::AbstractString = "500@10",
                           step::AbstractString = "1 d") -> NTuple{6,Float64}
 
-Query NASA JPL Horizons for the heliocentric (or relative to `center`) state
-vector of `body` at `date`, returning `(x, y, z, vx, vy, vz)` in **km** and **km/s**
-in the **J2000 inertial frame**.
+Query NASA JPL Horizons for the state vector of `body` at `date`, returning
+`(x, y, z, vx, vy, vz)` in **km** and **km/s** in the **J2000 ecliptic frame**.
 
 `body` can be any Horizons COMMAND id recognized by the system — for example
 `"10"` (Sun), `"199"` (Mercury), `"301"` (Moon), `"501"` (Io), `"999"` (Pluto).
 
 `center` is the coordinate origin:
-- `"500@10"`  — solar-system barycenter
+- `"500@10"`  — Sun body center (heliocentric)
 - `"500@399"` — Earth body center
-- `"500@0"`   — solar-system barycenter (same as `500@10`)
+- `"500@599"` — Jupiter body center
+- `"500@699"` — Saturn body center
+- `"500@0"`   — solar-system barycenter
 
 `step` is the ephemeris step (defaults to `1 d`, so the call is cheap).
 
-Uses the in-memory cache `_HORIZONS_CACHE` so repeated calls during a single
-session are free.
+Results are cached per exact epoch, center and step (`_HORIZONS_CACHE`), so
+repeated identical calls during a session are free.
 
 ## Example
 
@@ -63,16 +66,15 @@ julia> sv = AstroIC.horizons_state_vector("301", DateTime(2026, 7, 25, 0, 0); ce
 function horizons_state_vector(body::AbstractString, date::DateTime;
                                center::AbstractString = "500@10",
                                step::AbstractString = "1 d")
-    # Round to the nearest hour to improve cache hit rate
-    hour_key = DateTime(year(date), month(date), day(date), hour(date))
-    cache_key = (body, hour_key)
+    cache_key = (String(body), String(center), String(step), date)
     if haskey(_HORIZONS_CACHE, cache_key)
         return _HORIZONS_CACHE[cache_key]
     end
 
-    date_str = Dates.format(date, "yyyy-mm-dd HH:MM")
+    date_str = replace(Dates.format(date, "yyyy-mm-dd HH:MM"), " " => "%20")
+    step_str = replace(step, " " => "%20")
 
-    url = "https://ssd-api.jpl.nasa.gov/api/horizons.api?" *
+    url = "https://ssd.jpl.nasa.gov/api/horizons.api?" *
           "format=text&" *
           "COMMAND='" * body * "'&" *
           "OBJ_DATA=NO&MAKE_EPHEM=YES&" *
@@ -80,8 +82,10 @@ function horizons_state_vector(body::AbstractString, date::DateTime;
           "CENTER='" * center * "'&" *
           "START_TIME='" * date_str * "'&" *
           "STOP_TIME='" * date_str * "'&" *
-          "STEP_SIZE='" * step * "'&" *
-          "VEC_TABLE=2"
+          "STEP_SIZE='" * step_str * "'&" *
+          "VEC_TABLE=2&" *
+          "REF_PLANE='ECLIPTIC'&" *
+          "OUT_UNITS='KM-S'"
 
     txt = _http_get(url)
 
@@ -90,14 +94,14 @@ function horizons_state_vector(body::AbstractString, date::DateTime;
     return sv
 end
 
-# Simple HTTP GET helper. Avoids a hard HTTP.jl dependency so that AstroIC.jl's
-# environment stays light. Falls back to a descriptive error if the network or
-# the underlying stack is unavailable.
+# Simple HTTP GET helper using the Downloads stdlib. The response is written
+# into an in-memory buffer; note that `Downloads.download(url)` alone returns a
+# temporary file path, not the body text.
 function _http_get(url::AbstractString)
+    io = IOBuffer()
     try
-        # Lazy import — only triggered on first use
-        @eval Main using Downloads
-        return String(Main.Downloads.download(url))
+        Downloads.download(url, io; timeout = 30)
+        return String(take!(io))
     catch e
         error("""
         Could not reach JPL Horizons at $url.
@@ -169,27 +173,34 @@ positioned relative to its `parent` body.
 Currently supported `body` values (case-sensitive, see [`PLANET_TABLE`](@ref)):
 `"Moon"`, `"Io"`, `"Europa"`, `"Ganymede"`, `"Callisto"`, `"Titan"`.
 
-For `"Moon"`, the parent is Earth (center `500@399`).
-For Galilean moons, the parent is Jupiter (center `500@599`).
-For Titan, the parent is Saturn (center `500@699`).
+By default the parent is taken from [`PLANET_TABLE`](@ref) (`Earth` for the
+Moon, `Jupiter` for the Galilean moons, `Saturn` for Titan), but it can be
+overridden with the `parent` keyword. The returned `Star` uses SI units.
 """
-function moon(date::DateTime; body::AbstractString = "Moon", parent::AbstractString = "Earth")
-    parent_center = parent == "Earth"   ? "500@399" :
-                    parent == "Jupiter" ? "500@599" :
-                    parent == "Saturn"  ? "500@699" :
-                    error("Unknown parent body: $parent. Use Earth, Jupiter or Saturn.")
-
-    body_id = planet_horizons_id(body)
+function moon(date::DateTime; body::AbstractString = "Moon",
+              parent::Union{Nothing,AbstractString} = nothing)
+    info = planet_info(body)
+    parent_name = isnothing(parent) ? info.parent : parent
+    isempty(parent_name) && error("Body `$(body)` has no parent; specify `parent`.")
+    parent_center = "500@" * planet_horizons_id(parent_name)
 
     # Step of 1 hour is fine — the moon moves only ~0.04° in an hour
-    x, y, z, vx, vy, vz = horizons_state_vector(body_id, date;
+    x, y, z, vx, vy, vz = horizons_state_vector(info.horizons_id, date;
                                                  center = parent_center,
                                                  step   = "1 h")
 
     p = Star(uSI, id = -1)  # id = -1 means "moon" (planet ids are 1..8, sun is 0)
-    p = setproperty!!(p, :Pos, PVector(u"km" * x, u"km" * y, u"km" * z))
-    p = setproperty!!(p, :Vel, PVector(u"km/s" * vx, u"km/s" * vy, u"km/s" * vz))
-    p = setproperty!!(p, :Mass, planet_info(body).M_kg * u"kg")
+    p = setproperty!!(p, :Pos, PVector(
+        uconvert(u"m", u"km" * x),
+        uconvert(u"m", u"km" * y),
+        uconvert(u"m", u"km" * z),
+    ))
+    p = setproperty!!(p, :Vel, PVector(
+        uconvert(u"m/s", u"km/s" * vx),
+        uconvert(u"m/s", u"km/s" * vy),
+        uconvert(u"m/s", u"km/s" * vz),
+    ))
+    p = setproperty!!(p, :Mass, info.M_kg * u"kg")
     return p
 end
 
@@ -210,13 +221,13 @@ Each body is a `Star` (PhysicalParticle) with fields:
 - `Vel`     : heliocentric velocity (SI units, m/s)
 - `Mass`    : SI kg
 
-Bodies are in **heliocentric** coordinates, even the moons. Moon position is
-computed as `Earth_position + Moon_geocentric_offset` so all bodies share the
-same frame.
+Bodies are in **heliocentric ecliptic J2000 Cartesian** coordinates, even the
+moons. Moon position is computed as `parent_position + parent-centered offset`
+so all bodies share the same frame.
 
-> **Performance**: 16 REST calls to JPL Horizons — the first call takes ~5 s
-> total (sequential). Results are cached per-process so subsequent calls at the
-> same hour are free.
+> **Performance**: the first call performs several sequential Horizons
+> requests. Results are cached per-process (keyed by body, center, step and
+> exact epoch), so subsequent identical calls are free.
 
 ```julia
 julia> using AstroIC, Dates
@@ -234,19 +245,15 @@ function solar_system_full(date::DateTime;
     end
 
     if include_moons
-        # The Moon, Galilean moons, and Titan are in PLANET_TABLE.
-        # Their horizons_state_vector returns positions RELATIVE to their parent,
-        # so we add the parent's position to convert to heliocentric.
-        for (body, parent) in [("Moon",      "Earth"),
-                               ("Io",        "Jupiter"),
-                               ("Europa",    "Jupiter"),
-                               ("Ganymede",  "Jupiter"),
-                               ("Callisto",  "Jupiter"),
-                               ("Titan",     "Saturn")]
+        # Every body with a non-Sun parent in PLANET_TABLE is a moon. Its
+        # state vector is returned RELATIVE to that parent, so we add the
+        # parent's heliocentric position to convert to heliocentric.
+        for info in PLANET_TABLE
+            (isempty(info.parent) || info.parent == "Sun") && continue
             try
-                push!(bodies, _moon_particle_heliocentric(date, body, parent))
+                push!(bodies, _moon_particle_heliocentric(date, info.name, info.parent))
             catch e
-                @warn "Failed to fetch $body: $(e)"
+                @warn "Failed to fetch $(info.name): $(e)"
             end
         end
     end
@@ -260,15 +267,8 @@ function _moon_particle_heliocentric(date::DateTime, body::AbstractString, paren
     # Heliocentric position = parent_position (heliocentric) + offset (parent-centered)
     # Heliocentric velocity  = parent_velocity  + offset_velocity
 
-    # 1) Look up the parent in the existing solarsystem StructArray (it's already there
-    #    for Sun, Mercury..Neptune; for moons the parent is always one of those).
-    parent_name_to_horizons_id = Dict(
-        "Sun" => "10", "Mercury" => "199", "Venus" => "299", "Earth" => "399",
-        "Mars" => "499", "Jupiter" => "599", "Saturn" => "699",
-        "Uranus" => "799", "Neptune" => "899",
-    )
-    parent_id = parent_name_to_horizons_id[parent]
-
+    # 1) Parent state in heliocentric coordinates.
+    parent_id = planet_horizons_id(parent)
     parent_x, parent_y, parent_z, parent_vx, parent_vy, parent_vz =
         horizons_state_vector(parent_id, date; center = "500@10", step = "1 h")
 

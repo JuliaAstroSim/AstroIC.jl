@@ -25,9 +25,16 @@ end
 
 """
 $(TYPEDSIGNATURES)
+
+Load the SPARC late-type galaxy sample with quality cuts.
+
+# Keywords
+- `exclude_list`: galaxy names to drop from the sample
+- `prior`: halo-fit prior table (`"LCDM"`, `"Flat"`, ...)
+- `model`: halo model (`"NFW"`, `"Burkert"`, ...)
 """
 function load_SPARC_LTGs_data(;
-    exclude_list = ["F561-1"], #TODO
+    exclude_list = ["F561-1"],
     prior::AbstractString = "LCDM",
     model::AbstractString = "NFW",
 )
@@ -45,7 +52,10 @@ function load_SPARC_LTGs_data(;
     ### Clean data
     # Join by name
     df = innerjoin(select(df_SPARC, Not([:D, :e_D, :f_D, :Ref])), df_SPARC_bulges, select(df_SPARC_halo, Not([:Ybul, :e_Ybul, :C200, :e_C200])), on = :Galaxy)
-    
+
+    # Drop user-specified galaxies
+    isempty(exclude_list) || filter!(:Galaxy => x -> !(x in exclude_list), df)
+
     # Filter out galaxies with asymmetric rotation curves that do not trace the equilibrium gravitational potential (Q = 3)
     filter!(:Q => x->x!=3, df)
 
@@ -88,6 +98,8 @@ function load_SPARC_LTGs_data(;
     df[!, :Rd] = Rd_from_RHI.(df.RHI, df.MHI)
     filter!(:Rd => !iszero, df)
 
+    # Reserved columns for downstream fitting in the simulation pipeline;
+    # they stay zero in the loader itself.
     df[!, :a0_mean] = zeros(size(df,1))
     df[!, :a0_std] = zeros(size(df,1))
     df[!, :b_r_IC] = zeros(size(df,1))
@@ -111,7 +123,13 @@ function load_SPARC_LTGs_data(;
     for Galaxy_id in 1:length(df.Galaxy)
         id = findfirst(x->x==df.Galaxy[Galaxy_id], df_rodrigues2018.Galaxy)
         if !isnothing(id)
-            df.a0_rodrigues2018[Galaxy_id] = 10^(df_rodrigues2018.var"Log_10 a0"[id]) * 1000
+            lg = df_rodrigues2018.var"Log_10 a0"[id]
+            a0 = 10^lg * 1000
+            lower = 10^(lg + df_rodrigues2018.var"a0 S1-"[id]) * 1000
+            upper = 10^(lg + df_rodrigues2018.var"a0 S1+"[id]) * 1000
+            df.a0_rodrigues2018[Galaxy_id] = a0
+            df.a0_rodrigues2018_std_lower[Galaxy_id] = a0 - lower
+            df.a0_rodrigues2018_std_upper[Galaxy_id] = upper - a0
         end
     end
     

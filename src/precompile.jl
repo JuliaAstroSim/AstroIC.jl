@@ -6,6 +6,10 @@
         data = generate(ExponentialDisc(; NumSamples, HoleRadius = 0.2u"kpc"))
         data = generate(Bulge(; NumSamples))
         data = generate(Bulge(; NumSamples), RotationCurve = ([0.0, 5.0, 10.0]*u"kpc", [0.0, 200.0, 230.0]*u"km/s"))
+        data = generate(GasCloud(; Radius = 1.0u"kpc", rho0 = 1.0u"Msun/kpc^3",
+                                 T = 300u"K", Nx = 3, Ny = 3, Nz = 3))
+        data = generate(SphericalSystem(STAR, NumSamples, x -> 1.0u"Msun/kpc");
+                        MaxRadius = 1.0u"kpc")
         p = sum(data.Pos)
         v = sum(data.Vel)
         pos = PVector(100.0, 100.0, 100.0, u"kpc")

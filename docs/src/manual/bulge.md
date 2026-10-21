@@ -19,7 +19,7 @@ using PhysicalParticles, UnitfulAstro
 config = Bulge(
     collection  = STAR,
     NumSamples  = 5000,
-    TotalMass   = 8.57u"Msun",
+    TotalMass   = 8.57e9u"Msun",
     ScaleRadius = 0.075u"kpc",
     CutRadius   = 2.1u"kpc",
     q           = 0.5,
@@ -28,6 +28,26 @@ config = Bulge(
 
 particles = generate(config)
 length(particles)
+```
+
+## With a rotation curve
+
+Pass `RotationCurve = (radii, velocities)` to assign rotational velocities:
+
+```julia
+rc_r = [0.5, 1.0, 2.0, 4.0, 6.0] .* u"kpc"
+rc_v = [50.0, 100.0, 150.0, 200.0, 220.0] .* u"km/s"
+particles = generate(config; RotationCurve = (rc_r, rc_v))
+```
+
+## With velocity dispersion
+
+`VelocityDispersion` accepts a constant or a radial function and adds
+isotropic Gaussian velocities:
+
+```julia
+particles = generate(config; VelocityDispersion = 100.0u"km/s")
+particles = generate(config; VelocityDispersion = r -> 100.0u"km/s" * (r / 1.0u"kpc"))
 ```
 
 See [`Bulge`](@ref) and [`generate(::Bulge)`](@ref) in the

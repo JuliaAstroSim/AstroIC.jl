@@ -27,6 +27,11 @@ function ExponentialDisc(;
         ScaleHeight::Number = 0.02u"kpc",
         HoleRadius::Number = 0.0u"kpc",
     )
+    # All length fields share one type parameter, so normalize them to the
+    # unit of `ScaleRadius` here rather than requiring the caller to match it.
+    uLength = unit(ScaleRadius)
+    ScaleHeight = uconvert(uLength, ScaleHeight)
+    HoleRadius = uconvert(uLength, HoleRadius)
     return ExponentialDisc(collection, NumSamples, TotalMass, ScaleRadius, ScaleHeight, HoleRadius)
 end
 
@@ -53,19 +58,40 @@ end
 """
 $(TYPEDSIGNATURES)
 
+`MaxRadius` and `MaxHeight` truncate the density profile. They default to
+`5 * ScaleRadius + HoleRadius`; the extra `HoleRadius` keeps the outer tail of
+a disc with a central hole inside the sampling box. `TotalMass` is distributed
+over all sampled particles, so the truncated density is renormalized to the
+requested total mass.
 """
 function generate(config::ExponentialDisc, units = uAstro;
     RotationCurve = nothing,
-    MaxRadius = 5 * config.ScaleRadius,
+    MaxRadius = 5 * config.ScaleRadius + config.HoleRadius,
     MaxHeight = MaxRadius,
     k = 2, # degree of rotation curve interpolation/extrapolation spline (1 = linear, 2 = quadratic, 3 = cubic, up to 5)
     bc = "nearest", # behavior when evaluating the spline outside the support domain, which is (minimum(x), maximum(x)). The allowed values are "nearest", "zero", "extrapolate", "error"
     rotational_ratio = 0.9,
+    rng::AbstractRNG = Random.default_rng(),
 )
     uLen = getuLength(units)
     uVel = getuVel(units)
 
+    # The rejection sampler works with dimensionless numbers in the unit of
+    # the config. Convert the sampling bounds into that same unit so that the
+    # numbers, `pdf`, and the final quantities stay consistent even when the
+    # requested output unit differs from the config unit.
+    uScale = unit(config.ScaleRadius)
+    MaxRadius = uconvert(uScale, MaxRadius)
+    MaxHeight = uconvert(uScale, MaxHeight)
+
     NumSamples = config.NumSamples
+
+    if MaxRadius <= zero(MaxRadius)
+        error("Keyword `MaxRadius` must be positive")
+    end
+    if MaxHeight <= zero(MaxHeight)
+        error("Keyword `MaxHeight` must be positive")
+    end
 
     # generate radii and heights
     if MaxRadius < config.ScaleRadius
@@ -124,15 +150,15 @@ function generate(config::ExponentialDisc, units = uAstro;
 
     # rejection sampling
     while length(R) < NumSamples
-        R_rand = rand() * ustrip(MaxRadius)
-        z_rand = rand() * 2*ustrip(MaxHeight) - ustrip(MaxHeight)
-        if rand() < pdf(config, R_rand, z_rand) / pdf_maximum
-            push!(R, R_rand * uLen)
-            push!(z, z_rand * uLen)
+        R_rand = rand(rng) * ustrip(uScale, MaxRadius)
+        z_rand = rand(rng) * 2*ustrip(uScale, MaxHeight) - ustrip(uScale, MaxHeight)
+        if rand(rng) < pdf(config, R_rand, z_rand) / pdf_maximum
+            push!(R, R_rand * uScale)
+            push!(z, z_rand * uScale)
         end
     end
 
-    pos2d = StructArray(rand_pos_2d.(R))
+    pos2d = StructArray([rand_pos_2d(ri; rng = rng) for ri in R])
     pos = StructArray(PVector.(pos2d.x, pos2d.y, z))
 
     # Extrapolate rotation curve
@@ -142,7 +168,8 @@ function generate(config::ExponentialDisc, units = uAstro;
         xc, vc = RotationCurve
         spl = Spline1D(ustrip.(uLen, xc), ustrip.(uVel, vc); k, bc)
         v = spl(ustrip.(uLen, R)) * uVel
-        vel = rotational_velocity.(pos.x, pos.y, v, rotational_ratio)
+        vel = [rotational_velocity(px, py, vv, rotational_ratio; rng = rng)
+               for (px, py, vv) in zip(pos.x, pos.y, v)]
 
         # Cancel out shifting
         v0 = mean(vel)
@@ -154,7 +181,7 @@ function generate(config::ExponentialDisc, units = uAstro;
     # Packing
     Promote = ismeasurement(config.ScaleRadius) || ismeasurement(config.ScaleHeight) || ismeasurement(config.TotalMass)
     Promote && @info "Promoting to `Measurement`"
-    particles = StructArray(Star(units, id = i, Measurement=Promote) for i in 1:NumSamples)
+    particles = StructArray(Star(units, id = i, Measurement=Promote, collection = config.collection) for i in 1:NumSamples)
     assign_particles(particles, :Pos, pos)
     assign_particles(particles, :Vel, vel)
 

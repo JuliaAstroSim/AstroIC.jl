@@ -95,7 +95,8 @@ Sample from the discrete pdf using rejection method
     - `x` should start from 0
     - the maximum of `pdf_array` would be the width of sampling box
 """
-function rejection_sampling(x, pdf_array, rMax, NumSamples)
+function rejection_sampling(x, pdf_array, rMax, NumSamples;
+                            rng::AbstractRNG = Random.default_rng())
     spl = Spline1D(ustrip.(x), ustrip.(pdf_array))
     pdf_maximum = ustrip(maximum(pdf_array))
 
@@ -103,8 +104,8 @@ function rejection_sampling(x, pdf_array, rMax, NumSamples)
     sizehint!(R, NumSamples)
 
     while length(R) < NumSamples
-        R_rand = rand() * rMax
-        if rand() < spl(ustrip(R_rand)) / pdf_maximum
+        R_rand = rand(rng) * rMax
+        if rand(rng) < spl(ustrip(R_rand)) / pdf_maximum
             push!(R, R_rand)
         end
     end
@@ -122,7 +123,8 @@ Sample from the discrete pdf using rejection method
     - `x` should start from 0
     - the maximum of `pdf` would be the width of sampling box
 """
-function rejection_sampling(pdf::Function, rMax, NumSamples)
+function rejection_sampling(pdf::Function, rMax, NumSamples;
+                            rng::AbstractRNG = Random.default_rng())
     x = collect(LinRange(rMax/10000, rMax, 10000))
     pdf_array = pdf.(x)
     pdf_maximum = maximum(pdf_array)
@@ -131,8 +133,8 @@ function rejection_sampling(pdf::Function, rMax, NumSamples)
     sizehint!(R, NumSamples)
 
     while length(R) < NumSamples
-        R_rand = rand() * rMax
-        if rand() < pdf(R_rand) / pdf_maximum
+        R_rand = rand(rng) * rMax
+        if rand(rng) < pdf(R_rand) / pdf_maximum
             push!(R, R_rand)
         end
     end

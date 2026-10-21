@@ -13,6 +13,31 @@
     @test 1 - norm(mean(data.Vel)) / norm(vel) < 0.0001
 end
 
+using Random: MersenneTwister
+
+@testset "Reproducibility with explicit RNG" begin
+    pcfg = PlummerStarCluster(; NumSamples = 20)
+    p1 = generate(pcfg; rng = MersenneTwister(11))
+    p2 = generate(pcfg; rng = MersenneTwister(11))
+    @test p1.Pos == p2.Pos
+    @test p1.Vel == p2.Vel
+    @test generate(pcfg; rng = MersenneTwister(12)).Pos != p1.Pos
+
+    dcfg = ExponentialDisc(; NumSamples = 20)
+    rc = ([0.5, 1.0, 2.0, 4.0] .* u"kpc", [50.0, 100.0, 150.0, 200.0] .* u"km/s")
+    d1 = generate(dcfg; RotationCurve = rc, rng = MersenneTwister(11))
+    d2 = generate(dcfg; RotationCurve = rc, rng = MersenneTwister(11))
+    @test d1.Pos == d2.Pos
+    @test d1.Vel == d2.Vel
+
+    gcfg = GasCloud(; Radius = 1.0u"kpc", rho0 = 1.0u"Msun/kpc^3",
+                     Nx = 3, Ny = 3, Nz = 3)
+    g1 = generate(gcfg; rng = MersenneTwister(11))
+    g2 = generate(gcfg; rng = MersenneTwister(11))
+    @test g1.Pos == g2.Pos
+    @test g1.Vel == g2.Vel
+end
+
 @testset "Tools: addpos / addvel on Vector" begin
     # The StructArray branch is already covered by the "Tools" testset above
     # (the result of `generate` is a StructArray). This exercises the

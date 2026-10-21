@@ -22,8 +22,8 @@ pkg> test AstroIC
 
 ## Basic usage
 
-The package follows a two-step pattern: first build an immutable **config**
-struct describing the system, then call the [`generate`](@ref) dispatcher to
+The package follows a two-step pattern: first build a **config** struct
+describing the system, then call the [`generate`](@ref) dispatcher to
 materialize particles.
 
 ```@repl guide
@@ -55,7 +55,7 @@ them into a single particle array:
 using AstroIC
 using PhysicalParticles, UnitfulAstro
 
-bulge = generate(Bulge(; NumSamples = 1000, TotalMass = 8.57u"Msun",
+bulge = generate(Bulge(; NumSamples = 1000, TotalMass = 8.57e9u"Msun",
                         ScaleRadius = 0.075u"kpc", CutRadius = 2.1u"kpc",
                         q = 0.5, α = 1.8))
 disc = generate(ExponentialDisc(; NumSamples = 5000, TotalMass = 1.0e10u"Msun",

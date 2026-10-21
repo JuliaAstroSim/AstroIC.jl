@@ -16,9 +16,14 @@ See [`load_data_MW_satellites`](@ref), [`load_data_UFDs`](@ref) and
 [Library reference](@ref Methods) for full signatures.
 
 `generate_milkyway_baryon_particles(Np)` produces a composite Milky-Way-like
-system of bulge + thin disc + thick disc + HI + HII gas using the published
+system of bulge + thin disc + thick disc + HI + H2 gas using the published
 mass fractions, sampled from the corresponding `Bulge` / `ExponentialDisc`
-configs.
+configs; the structural parameters follow McMillan (2017, MNRAS 465, 76).
+Stellar components are `STAR`, gas components are `GAS`, and by
+default the stellar discs and gas are assigned the bundled Eilers et al. (2019)
+rotation curve. Pass `RotationCurve = nothing` to generate non-rotating
+discs/gas, or provide your own `(radii, velocities)` tuple. The bulge is
+dispersion-supported with a constant 100 km/s (1D) velocity dispersion.
 
 ## SPARC rotation curves
 

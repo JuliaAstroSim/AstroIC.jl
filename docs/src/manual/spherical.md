@@ -45,6 +45,10 @@ config = SphericalSystem(STAR, 1000, df)
 particles = generate(config; MaxRadius)
 ```
 
+Pass `RotationCurve = (radii, velocities)` to assign rotational velocities and
+`VelocityDispersion` (constant or `r -> σ`) to add isotropic Gaussian
+dispersion. Without either keyword, all velocities are zero.
+
 See [`SphericalSystem`](@ref) and [`generate(::SphericalSystem)`](@ref) in the
 [Library reference](@ref Methods) for full signatures and accepted forms
 of `mass_shell`.

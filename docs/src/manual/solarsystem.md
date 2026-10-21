@@ -28,4 +28,27 @@ using Dates
 particles = solarsystem(jdcnv(DateTime(2024, 1, 1)))
 ```
 
+## Extended Solar System (JPL Horizons)
+
+The extended API adds Pluto, the Moon, the Galilean moons and Titan by
+querying the JPL Horizons service. **These calls require network access.**
+
+```julia
+using AstroIC, Dates
+
+# Sun + 8 planets + Pluto + Moon + Io/Europa/Ganymede/Callisto + Titan (16 bodies)
+bodies = solar_system_full(DateTime(2026, 7, 25))
+
+# A single moon, relative to its parent, in SI units
+m = moon(DateTime(2026, 7, 25); body = "Europa")
+
+# Raw Horizons state vector: (x, y, z, vx, vy, vz) in km and km/s
+sv = horizons_state_vector("301", DateTime(2026, 7, 25); center = "500@399")
+```
+
+Results are cached in memory per `(body, center, step, epoch)`. Call
+`horizons_state_vector` directly if you need a state vector in a different
+reference center. Positions are heliocentric ecliptic J2000 Cartesian
+coordinates, consistent with [`solarsystem`](@ref).
+
 !!! tip "Use [AstroPlot.jl](https://github.com/JuliaAstroSim/AstroPlot.jl) to visualize the inner Solar System"

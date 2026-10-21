@@ -2,16 +2,28 @@
 """
     function helio2xyz(jd, num)
 
-Convert heliocentric coordinates (in unit `AU`) to Cartesian coordinates in unit `m`
+Convert heliocentric ecliptic coordinates to Cartesian coordinates in unit `m`.
+
+`AstroLib.helio` returns `(radius, longitude, latitude)` in the J2000 ecliptic
+frame, so the Cartesian components are
+
+```math
+x = r \\cos(\\beta)\\cos(\\lambda), \\quad
+y = r \\cos(\\beta)\\sin(\\lambda), \\quad
+z = r \\sin(\\beta),
+```
+
+where ``\\lambda`` is the ecliptic longitude and ``\\beta`` the ecliptic latitude.
 
 Returns a `PhysicalParticles::PVector`
 """
 function helio2xyz(jd, num)
-    r, theta, phi = helio(jd, num, true)
+    r, longitude, latitude = helio(jd, num, true)
+    coslat = cos(latitude)
     return PVector(
-        uconvert(u"m", r * u"AU" * sin(theta) * cos(phi)),
-        uconvert(u"m", r * u"AU" * sin(theta) * sin(phi)),
-        uconvert(u"m", r * u"AU" * cos(theta)),
+        uconvert(u"m", r * u"AU" * coslat * cos(longitude)),
+        uconvert(u"m", r * u"AU" * coslat * sin(longitude)),
+        uconvert(u"m", r * u"AU" * sin(latitude)),
     )
 end
 

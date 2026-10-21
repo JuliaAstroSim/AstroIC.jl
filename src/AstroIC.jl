@@ -13,10 +13,10 @@ using BangBang
 using Dates
 using StructArrays
 using Dierckx
-using QuadGK
 using Optim
 using CSV
 using XLSX
+using Downloads
 using UnitfulAngles
 using Measurements
 
@@ -24,10 +24,7 @@ using Measurements
 @reexport using AstroIO
 
 import Base: show
-import Unitful: Units
 import Distributions: pdf
-import PhysicalConstants: CODATA2018
-import PhysicalParticles: rotate, rotate_x, rotate_y, rotate_z
 @reexport using AstroSimBase
 
 using AstroLib
@@ -73,7 +70,10 @@ abstract type InitialConditionConfig end
 
 _common_keywords = """
 ## Common keywords
-- `constants`
+- `rng`: random number generator used for sampling (default `Random.default_rng()`)
+
+Generators that need physical constants (`PlummerStarCluster`, `GasCloud`)
+also accept `constants` (default `Constant(units)`).
 """
 
 include("Tools.jl")
@@ -115,8 +115,10 @@ Generate initial conditions in `units`
 
 # Usable IC configs
 - `PlummerStarCluster`
-- `GasCloud`
 - `ExponentialDisc`
+- `Bulge`
+- `GasCloud`
+- `SphericalSystem`
 
 $_common_keywords
 """

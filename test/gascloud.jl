@@ -16,6 +16,28 @@
     @test size(x2) == (5, 3, 2)
 end
 
+@testset "GasCloud: collection & thermal velocities" begin
+    config = GasCloud(;
+        Radius       = 1.0u"kpc",
+        rho0         = 1.0u"Msun/kpc^3",
+        T            = 300u"K",
+        ParticleMass = Constant(uAstro).m_p,
+        Nx           = 7,
+        Ny           = 7,
+        Nz           = 7,
+    )
+    data = generate(config, uAstro)
+
+    # The requested collection must be propagated to every particle.
+    @test all(==(GAS), data.Collection)
+
+    # Velocities must follow a Maxwellian, not all have identical magnitude.
+    speeds = [ustrip(u"kpc/Gyr", norm(p.Vel)) for p in data]
+    v0 = ustrip(u"kpc/Gyr", vmean(config.T, config.ParticleMass, uAstro))
+    @test mean(speeds) ≈ v0 rtol = 0.15
+    @test std(speeds) > 0.2 * v0
+end
+
 @testset "GasCloud: generate unit consistency" begin
     # Bug history: `generate(::GasCloud, uSI)` previously crashed with
     #   MethodError: Cannot `convert` an object of type Star to an object

@@ -8,6 +8,7 @@ of mass `mass` at temperature `T`, converted to the velocity unit of `units`.
 - `T`: temperature (with units, e.g. `300u"K"`)
 - `mass`: particle mass (with units, e.g. `Constant().m_p` or `1.0u"Msun"`)
 - `units`: target unit system (default `uAstro`); must support `getuVel`
+- `constants`: physical constants used for `k_B` (default `Constant(units)`)
 
 # Returns
 A velocity in the velocity unit of `units` (e.g. `kpc/Gyr` for `uAstro`,
@@ -18,8 +19,9 @@ A velocity in the velocity unit of `units` (e.g. `kpc/Gyr` for `uAstro`,
 v = vmean(300u"K", Constant().m_p, uSI)   # ≈ 1.15 km/s for a proton
 ```
 """
-function vmean(T::Number, mass::Number, units = uAstro)
-    return uconvert(getuVel(units), sqrt(8 * Constant(units).k_B * T / pi / mass))
+function vmean(T::Number, mass::Number, units = uAstro;
+               constants::Constant = Constant(units))
+    return uconvert(getuVel(units), sqrt(8 * constants.k_B * T / pi / mass))
 end
 
 """
@@ -30,6 +32,7 @@ at temperature `T`, converted to the squared-velocity unit of `units`.
 
 See also [`vmean`](@ref).
 """
-function vmean2(T::Number, mass::Number, units = uAstro)
-    return uconvert(getuVel(units), 8 * Constant(units).k_B * T / pi / mass)
+function vmean2(T::Number, mass::Number, units = uAstro;
+                constants::Constant = Constant(units))
+    return uconvert(getuVel(units)^2, 8 * constants.k_B * T / pi / mass)
 end

@@ -27,6 +27,10 @@ particles = generate(config; MaxRadius = 6.0u"kpc")
 length(particles)
 ```
 
+`MaxRadius` defaults to `5 * ScaleRadius + HoleRadius`, and `MaxHeight`
+defaults to `MaxRadius`. The extra `HoleRadius` keeps the outer tail of a disc
+with a central hole inside the sampling box.
+
 See [`ExponentialDisc`](@ref) and [`generate(::ExponentialDisc)`](@ref) in the
 [Library reference](@ref Methods) for full signatures and keyword arguments.
 

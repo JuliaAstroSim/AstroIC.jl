@@ -32,7 +32,17 @@ include("planets_extended.jl")
     dfSPARC = load_SPARC_LTGs_data()
     @test !isnothing(dfSPARC)
     @test !isempty(dfSPARC.a0_rodrigues2018)
+    @test any(!iszero, dfSPARC.a0_rodrigues2018_std_lower)
+    @test any(!iszero, dfSPARC.a0_rodrigues2018_std_upper)
     @test !isnothing(load_li2018_SPARC())
+
+    @test all(dfSPARC.Rd .> 0)
+    @test all(dfSPARC.Rd .< dfSPARC.RHI)
+
+    # `exclude_list` must actually drop the requested galaxy.
+    galaxy = String(dfSPARC.Galaxy[1])
+    df_excluded = load_SPARC_LTGs_data(exclude_list = [galaxy])
+    @test galaxy ∉ String.(df_excluded.Galaxy)
 
     @test !isnothing(load_SPARC_Xray_ETGs_data())
     @test !isnothing(load_SPARC_rotating_ETGs_data())
@@ -51,16 +61,14 @@ include("planets_extended.jl")
 
     particles = generate_milkyway_baryon_particles(500)
     @test length(particles) == 500
+    @test any(v -> !iszero(norm(v)), particles.Vel)
+    @test GAS in unique(particles.Collection)
+    @test STAR in unique(particles.Collection)
 end
 
 @testset "Load data: error paths" begin
-    # Milky Way baryon particle generation fails for too-small Np. The src
-    # check at MilkyWay.jl:56 only catches `iszero(NumSamples_HII)`; with
-    # Np = 1 the HII count becomes negative (Np - sum(other ceil-rounded
-    # counts) = -3), bypassing the check and triggering an ArgumentError
-    # downstream from `StructArray(Star(...) for i in 1:NumSamples)` with
-    # NumSamples = -3. Either way it must error — accept either exception
-    # type. Fix the src by tightening the guard to `NumSamples_HII < 1`.
+    # Milky Way baryon particle generation fails for too-small Np: the
+    # remaining H2 count becomes negative, which `generate` rejects.
     @test_throws Union{ErrorException, ArgumentError} generate_milkyway_baryon_particles(1)
 
     # SPARC rotating ETGs loader rejects unsupported :mode symbols.

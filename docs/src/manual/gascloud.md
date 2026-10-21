@@ -24,7 +24,8 @@ length(particles)
 ```
 
 The particle mass per cell is set to ``\rho_0 \cdot R^2 / r^2 \cdot L_x L_y
-L_z`` so that the central density is recovered.
+L_z``. `ParticleMass` is only the mean particle mass used to compute the
+thermal velocity (`vmean`); it is not the cell mass stored in each particle.
 
 See [`GasCloud`](@ref), [`generate(::GasCloud)`](@ref) and [`gridpoints`](@ref)
 in the [Library reference](@ref Methods) for full signatures.

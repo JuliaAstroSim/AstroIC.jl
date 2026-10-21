@@ -22,6 +22,18 @@ end
     @test !isempty(String(take!(io)))
 end
 
+@testset "Plummer: MaxRadius = 0 disables truncation" begin
+    config = PlummerStarCluster(; NumSamples = 10, VirialRadius = 0.01u"kpc")
+    particles = generate(config; MaxRadius = 0.0u"kpc")
+    @test length(particles) == 10
+end
+
+@testset "Plummer: collection propagation" begin
+    config = PlummerStarCluster(; NumSamples = 10, collection = BLACKHOLE)
+    particles = generate(config)
+    @test all(==(BLACKHOLE), particles.Collection)
+end
+
 @testset "Plummer: MOND model" begin
     # Exercises the MOND1983Milgrom dispatch of plummer_vel_sigma2.
     config = PlummerStarCluster(;
@@ -32,6 +44,11 @@ end
     )
     particles = generate(config)
     @test length(particles) == 50
+end
+
+@testset "Plummer: unsupported gravity model" begin
+    config = PlummerStarCluster(; NumSamples = 10, model = QUMOND())
+    @test_throws ErrorException generate(config)
 end
 
 @testset "Plummer: MaxRadius warning" begin

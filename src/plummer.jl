@@ -55,13 +55,19 @@ function plummer_vel_sigma2(r::Number, VirialRadius::Number, Mass::Number, G::Nu
     return G * Mass / sqrt(r^2 + VirialRadius^2) / 2.0
 end
 
-function rand_plummervel(r::Number, VirialRadius::Number, Mass::Number, G::Number, model::GravityModel)
-    v = sqrt(plummer_vel_sigma2(r, VirialRadius, Mass, G, model))
-    return PVector(randn() * v, randn() * v, randn() * v)
+function plummer_vel_sigma2(r::Number, VirialRadius::Number, Mass::Number, G::Number, model::GravityModel)
+    error("Plummer velocity dispersion is not implemented for gravity model `$(typeof(model))`")
 end
 
-function rand_plummervel(r::Array{T,N}, VirialRadius::Number, Mass::Number, G::Number, model::GravityModel) where T<:Number where N
-    return [rand_plummervel(i, VirialRadius, Mass, G, model) for i in r]
+function rand_plummervel(r::Number, VirialRadius::Number, Mass::Number, G::Number,
+                         model::GravityModel; rng::AbstractRNG = Random.default_rng())
+    v = sqrt(plummer_vel_sigma2(r, VirialRadius, Mass, G, model))
+    return PVector(randn(rng) * v, randn(rng) * v, randn(rng) * v)
+end
+
+function rand_plummervel(r::Array{T,N}, VirialRadius::Number, Mass::Number, G::Number,
+                         model::GravityModel; rng::AbstractRNG = Random.default_rng()) where T<:Number where N
+    return [rand_plummervel(i, VirialRadius, Mass, G, model; rng = rng) for i in r]
 end
 
 """
@@ -74,12 +80,15 @@ Automatically promote to `Measurement` if the parameters in config has `Measurem
 # Keywords
 
 - `MaxRadius`: resample particles outside the interested radius. Default is 5 * `VirialRadius`. Set to zero to avoid cutting off.
+- `TotalMass` is distributed over all sampled particles; when `MaxRadius`
+  truncates the profile the sampled density is renormalized to this total mass.
 
 $_common_keywords
 """
 function generate(config::PlummerStarCluster, units = uAstro;
                   constants::Constant = Constant(units),
                   MaxRadius = 5 * config.VirialRadius,
+                  rng::AbstractRNG = Random.default_rng(),
                   )
     uLength = getuLength(units)
 
@@ -87,20 +96,25 @@ function generate(config::PlummerStarCluster, units = uAstro;
     VirialRadius = uconvert(uLength, config.VirialRadius)
 
     # generate radii
-    if MaxRadius < VirialRadius
-        @warn "`MaxRadius` is smaller than `VirialRadius`, this may cause unphyiscal errors!"
+    if MaxRadius < zero(MaxRadius)
+        error("Keyword `MaxRadius` must be non-negative")
     end
 
-    r = plummer_pdfr_inv.(VirialRadius, rand(NumSamples))
-    for i in eachindex(r)
-        while r[i] > MaxRadius
-            r[i] = plummer_pdfr_inv(VirialRadius, rand())
+    r = plummer_pdfr_inv.(VirialRadius, rand(rng, NumSamples))
+    if !iszero(MaxRadius)
+        if MaxRadius < VirialRadius
+            @warn "`MaxRadius` is smaller than `VirialRadius`, this may cause unphyiscal errors!"
+        end
+        for i in eachindex(r)
+            while r[i] > MaxRadius
+                r[i] = plummer_pdfr_inv(VirialRadius, rand(rng))
+            end
         end
     end
 
     # Sampling
-    pos = rand_pos_3d.(r)
-    vel = rand_plummervel(r, VirialRadius, config.TotalMass, constants.G, config.model)
+    pos = [rand_pos_3d(ri; rng = rng) for ri in r]
+    vel = rand_plummervel(r, VirialRadius, config.TotalMass, constants.G, config.model; rng = rng)
 
     # Cancel out shifting
     v0 = mean(vel)
@@ -111,7 +125,7 @@ function generate(config::PlummerStarCluster, units = uAstro;
     # Packing
     Promote = ismeasurement(config.VirialRadius) || ismeasurement(config.TotalMass)
     Promote && @info "Promoting to `Measurement`"
-    particles = StructArray(Star(units, id = i, Measurement=Promote) for i in 1:NumSamples)
+    particles = StructArray(Star(units, id = i, Measurement=Promote, collection = config.collection) for i in 1:NumSamples)
     assign_particles(particles, :Pos, pos)
     assign_particles(particles, :Vel, vel)
     
