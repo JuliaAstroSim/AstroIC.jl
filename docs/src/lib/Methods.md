@@ -39,6 +39,16 @@ vmean
 vmean2
 ```
 
+## Planetary data
+
+```@docs
+PLANET_TABLE
+planet_info
+planet_names
+planet_color
+planet_horizons_id
+```
+
 ## Data loaders
 
 ```@docs
@@ -86,5 +96,6 @@ Filter = t -> nameof(t) in (
     :sech2_cdf_inv,
     :rejection_sampling,
     :Rd_from_RHI,
+    :_velocity_dispersion,
 )
 ```

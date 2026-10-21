@@ -20,6 +20,16 @@
 #   - horizons_id  : NASA JPL Horizons COMMAND id (string) for `horizons_state(...)`
 #   - parent       : name of the body this object orbits (empty string for heliocentric)
 
+"""
+    PLANET_TABLE
+
+Reference data for the Sun, the eight planets, Pluto and the major moons used
+by the extended Solar System API. Each entry is a `NamedTuple` with fields
+`name`, `horizons_id`, `parent`, `a_AU`, `e`, `i_deg`, `P_year`, `r_eq_km`,
+`M_kg`, `albedo` and `color`.
+
+Use [`planet_info`](@ref) to look up a single body by name.
+"""
 const PLANET_TABLE = [
     (name = "Sun",       horizons_id = "10",  parent = "",        a_AU = 0.0,      e = 0.0,    i_deg = 0.0,    P_year = 0.0,       r_eq_km = 695700.0, M_kg = 1.989e30,  albedo = 1.00, color = (1.000, 0.965, 0.840)),
     (name = "Mercury",   horizons_id = "199", parent = "Sun",     a_AU = 0.38710,  e = 0.2056, i_deg = 7.005,  P_year = 0.24085,   r_eq_km = 2439.7,   M_kg = 3.3011e23, albedo = 0.14, color = (0.660, 0.660, 0.660)),
